@@ -5,7 +5,7 @@ import AppSetting from '../views/AppSetting.vue'
 import AuthCheck from "../utils/AuthCheck"
 
 const isSetupConfig = (to, from, next) => {
-  let appEnv = import.meta.env.VITE_APP_ENV
+  let appEnv = import.meta.env.RENDERER_VITE_APP_ENV
   if (AuthCheck.envTransform(appEnv) != 'local') {
     if (AuthCheck.isConfig() == 'true') {
       next()
@@ -18,7 +18,7 @@ const isSetupConfig = (to, from, next) => {
 }
 
 const tokenGuard = (to, from, next) => {
-  let appEnv = import.meta.env.VITE_APP_ENV
+  let appEnv = import.meta.env.RENDERER_VITE_APP_ENV
   let scope = AuthCheck.getScope()
   if (!scope && AuthCheck.envTransform(appEnv) != 'local') {
     next('/auth/login')

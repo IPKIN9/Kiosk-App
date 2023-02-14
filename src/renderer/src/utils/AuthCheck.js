@@ -52,7 +52,7 @@ export default {
   },
 
   getLocalSetup(envKey){
-    if (this.envTransform(import.meta.env.VITE_APP_ENV) != 'local') {
+    if (this.envTransform(import.meta.env.RENDERER_VITE_APP_ENV) != 'local') {
       return localStorage.getItem(envKey)
     } else {
       return import.meta.env[envKey]

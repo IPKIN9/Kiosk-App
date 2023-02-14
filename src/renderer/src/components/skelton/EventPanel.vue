@@ -80,7 +80,7 @@ const meta = reactive({
   page: 1,
   search: '',
   publish: true,
-  merchant: localStorage.getItem('VITE_MERCHANT_ID'),
+  merchant: localStorage.getItem('RENDERER_VITE_MERCHANT_ID'),
   total: 0
 })
 
@@ -129,7 +129,7 @@ const goToLogin = () => {
   }
 
 onBeforeMount(() => {
-  let appEnv = import.meta.env.VITE_APP_ENVIRONMENT
+  let appEnv = import.meta.env.RENDERER_VITE_APP_ENVIRONMENT
   if (AuthCheck.envTransform(appEnv) != 'local') {
     const userToken = localStorage.getItem("user")
     if (!userToken) {

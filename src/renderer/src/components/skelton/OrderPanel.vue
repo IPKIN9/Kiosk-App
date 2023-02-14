@@ -302,7 +302,7 @@ import AuthCheck from "../../utils/AuthCheck";
 
 const titlePanel = ref("CUSTOMER FORM");
 
-const qrcode = import.meta.env.VITE_GOOGLE_CLOUD_STORAGE_URL;
+const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
 const emits = defineEmits(["eventTrigerr"]);
 const props = defineProps({
   eventId: Object,
@@ -778,7 +778,7 @@ const printStruct = async () => {
 
   const structData = {
     path_file: 'invoice.html',
-    label: localStorage.getItem('VITE_KIOSK_LABEL'),
+    label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
     total_order: strukInvoice.value.order.total_order,
@@ -800,7 +800,7 @@ const printQr = async () => {
   let struk = strukInvoice.value.detail_ticket
   const structData = {
     path_file: 'struct.html',
-    label: localStorage.getItem('VITE_KIOSK_LABEL'),
+    label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
     event_code: strukInvoice.value.event.code,
@@ -903,7 +903,7 @@ const goToLogin = () => {
   }
 
 onBeforeMount(() => {
-  let appEnv = import.meta.env.VITE_APP_ENVIRONMENT
+  let appEnv = import.meta.env.RENDERER_VITE_APP_ENVIRONMENT
   if (AuthCheck.envTransform(appEnv) != 'local') {
     const userToken = localStorage.getItem("user")
     if (!userToken) {

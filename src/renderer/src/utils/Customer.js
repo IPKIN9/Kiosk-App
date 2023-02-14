@@ -6,7 +6,7 @@ const endPoint = "/ex/v1/customer/";
 
 export default {
   getList(name) {
-    return Api(AuthCheck.getLocalSetup('VITE_GATE_SERVICE_URL')).get(
+    return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).get(
       `${endPoint}name/list?name=${name}`, AuthCheck.tokenConfig()
     );
   },

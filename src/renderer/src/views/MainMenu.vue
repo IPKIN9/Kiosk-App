@@ -16,7 +16,7 @@
           </div>
           <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">kios label</small>
-            <small class="fw-bold ms-2 text-uppercase">{{ envConfig.VITE_KIOSK_LABEL }}</small>
+            <small class="fw-bold ms-2 text-uppercase">{{ envConfig.RENDERER_VITE_KIOSK_LABEL }}</small>
           </div>
           <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">operator</small>
@@ -24,7 +24,7 @@
           </div>
           <div class="d-flex">
             <small class="text-uppercase">ip address</small>
-            <small class="fw-bold ms-2 text-uppercase">{{ envConfig.VITE_KIOSK_URL }}</small>
+            <small class="fw-bold ms-2 text-uppercase">{{ envConfig.RENDERER_VITE_KIOSK_URL }}</small>
           </div>
         </div>
       </div>
@@ -449,7 +449,7 @@ const addTicketList = (params) => {
   }
 }
 
-const qrcode = import.meta.env.VITE_GOOGLE_CLOUD_STORAGE_URL;
+const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
 const printButton = ref(false)
 const printQr = async (type) => {
   printButton.value = true
@@ -457,7 +457,7 @@ const printQr = async (type) => {
   let struk = orderDetail.detail_ticket
   const structData = {
     path_file: 'struct.html',
-    label: localStorage.getItem('VITE_KIOSK_LABEL'),
+    label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: orderDetail.order.no_order,
     booking_code: orderDetail.order.booking_code,
     event_code: orderDetail.event.code,
@@ -500,9 +500,9 @@ const printQr = async (type) => {
 // ANOTHER FUNCTION
 // ##########################################################
 const envConfig = reactive({
-  VITE_KIOSK_LABEL: "",
-  VITE_KIOSK_URL: "",
-  VITE_MERCHANT_ID: ""
+  RENDERER_VITE_KIOSK_LABEL: "",
+  RENDERER_VITE_KIOSK_URL: "",
+  RENDERER_VITE_MERCHANT_ID: ""
 })
 
 const getSetupConfig = () => {
@@ -568,7 +568,7 @@ const goToLogin = () => {
 }
 
 onBeforeMount(() => {
-  let appEnv = import.meta.env.VITE_APP_ENV
+  let appEnv = import.meta.env.RENDERER_VITE_APP_ENV
   if (AuthCheck.envTransform(appEnv) != 'local') {
 
     const userToken = localStorage.getItem("user")
