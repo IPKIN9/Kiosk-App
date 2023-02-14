@@ -1,0 +1,67 @@
+.indicator {
+  height: 14px !important;
+  width: 14px !important;
+  margin-left: 6px;
+}
+
+.rm-padding {
+  padding: 0px !important;
+  margin-bottom: -8px;
+}
+
+.icon-img {
+  height: auto !important;
+  width: 50px !important;
+}
+
+.icon-img-2 {
+  height: auto !important;
+  width: 42px !important;
+  margin: 4px;
+}
+
+.main-icon {
+  height: auto !important;
+  width: 90px !important;
+}
+
+.btn-card {
+  width: fit-content;
+  margin: 0 !important;
+  padding: 8px !important;
+}
+
+.bg-cs-orange {
+  background-color: #FF8B13 !important;
+}
+
+.bg-cs-muted {
+  background-color: #D0C9C0 !important;
+}
+
+.bg-cs-seat {
+  background-color: #9772FB !important;
+}
+
+.bg-cs-seatselect {
+  background-color: #541690 !important;
+}
+
+.bg-cs-darkprimary {
+  background-color: #041562 !important;
+}
+
+.bg-cs-numpad{
+  background-color: #DDDDDD !important;
+}
+
+.order-list{
+  height: 29rem !important;
+  width: 100% !important;
+}
+
+.btn-cs-close{
+  width: 2rem !important;
+  height: 2rem !important;
+  margin-top: -5px;
+}
