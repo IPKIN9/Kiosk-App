@@ -74,7 +74,7 @@ const fetchGrantToken = () => {
       let token = res.data.data.access_token
       let tokenEncrypt = CryptoJS.AES.encrypt(
         token,
-        import.meta.env.VITE_ENCRYPT_KEY
+        import.meta.env.RENDERER_VITE_ENCRYPT_KEY
       ).toString();
       localStorage.setItem("token", tokenEncrypt)
       if (dataPayload.username.length >= 1 || dataPayload.password.length >= 1) {
@@ -95,7 +95,7 @@ const fetchUserToken = () => {
   let tokenEncrypt = localStorage.getItem("token")
   let tokenDecrypt = CryptoJS.AES.decrypt(
     tokenEncrypt,
-    import.meta.env.VITE_ENCRYPT_KEY
+    import.meta.env.RENDERER_VITE_ENCRYPT_KEY
   ).toString(CryptoJS.enc.Utf8)
 
   Auth.getUserToken(dataPayload, tokenDecrypt)

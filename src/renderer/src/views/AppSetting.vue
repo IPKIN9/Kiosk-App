@@ -8,36 +8,36 @@
   <div class="row">
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_MERCHANT_ID" label="Merchant ID" class="form-control-lg" placeholder="1"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_MERCHANT_ID" label="Merchant ID" class="form-control-lg" placeholder="1"/>
       </div>
     </div>
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_KIOSK_LABEL" label="Kiosk Device Label" class="form-control-lg" placeholder="Kiosk 001"/>
-      </div>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-lg-6">
-      <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_KIOSK_URL" label="Kiosk Device Address" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_GATE_SERVICE_URL" label="Gate Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_KIOSK_LABEL" label="Kiosk Device Label" class="form-control-lg" placeholder="Kiosk 001"/>
       </div>
     </div>
   </div>
   <div class="row mt-2">
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_GATE_AUTH_URL" label="Kiosk Auth Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_KIOSK_URL" label="Kiosk Device Address" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.VITE_GOOGLE_CLOUD_STORAGE_URL" label="Google Cloud Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_SERVICE_URL" label="Gate Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-lg-6">
+      <div class="mb-3">
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_AUTH_URL" label="Kiosk Auth Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="mb-3">
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL" label="Google Cloud Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
   </div>
@@ -55,12 +55,12 @@ import AuthCheck from "../utils/AuthCheck"
 import Sweetalert from '../utils/Sweetalert';
 
 const deviceIppAddress = reactive({
-  VITE_KIOSK_LABEL: '',
-  VITE_KIOSK_URL: '',
-  VITE_GATE_SERVICE_URL: '',
-  VITE_GATE_AUTH_URL: '',
-  VITE_GOOGLE_CLOUD_STORAGE_URL: '',
-  VITE_MERCHANT_ID: ''
+  RENDERER_VITE_KIOSK_LABEL: '',
+  RENDERER_VITE_KIOSK_URL: '',
+  RENDERER_VITE_GATE_SERVICE_URL: '',
+  RENDERER_VITE_GATE_AUTH_URL: '',
+  RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL: '',
+  RENDERER_VITE_MERCHANT_ID: ''
 })
 
 const showEnvironment = () => {
