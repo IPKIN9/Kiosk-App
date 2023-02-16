@@ -337,10 +337,10 @@ import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
 import TimeWithShutdown from '../components/skelton/TimeWithShutdown.vue';
 import Order from '../utils/Order'
+import Invoke from '../utils/Invoke';
 import Currency from '../utils/Currency'
 import AuthCheck from '../utils/AuthCheck'
 import Sweetalert from '../utils/Sweetalert'
-import Invoke from '../utils/Invoke';
 
 // GET FUNCTION
 // ##########################################################
@@ -451,6 +451,7 @@ const addTicketList = (params) => {
 
 const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
 const printButton = ref(false)
+
 const printQr = async (type) => {
   printButton.value = true
 
