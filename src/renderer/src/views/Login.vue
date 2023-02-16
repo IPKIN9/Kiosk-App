@@ -46,13 +46,13 @@
 <script setup>
 import BaseButton from '../components/Button/BaseButton.vue'
 
-import Auth from '../utils/Auth'
-import { useRouter } from "vue-router"
 import { onMounted, reactive, ref } from "vue"
-import CryptoJS from 'crypto-js'
-import jwt_decode from "jwt-decode"
 import Sweetalert from '../utils/Sweetalert'
 import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from "vue-router"
+import jwt_decode from "jwt-decode"
+import Auth from '../utils/Auth'
+import CryptoJS from 'crypto-js'
 
 const passType = ref(true)
 const showPassword = () => {
