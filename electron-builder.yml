@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: dekstop-kiosk
+productName: selfgate-kiosk
 directories:
   buildResources: build
 files:
@@ -11,12 +11,14 @@ asarUnpack:
   - resources/*
 afterSign: build/notarize.js
 win:
-  executableName: dekstop-kiosk
+  executableName: Selfgate Kiosk
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  oneClick: false
+  allowToChangeInstallationDirectory: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
