@@ -20,7 +20,7 @@
           </div>
           <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">operator</small>
-            <small class="fw-bold ms-2 text-uppercase">Irwandi Paputungan</small>
+            <small class="fw-bold ms-2 text-uppercase">{{ userName }}</small>
           </div>
           <div class="d-flex">
             <small class="text-uppercase">ip address</small>
@@ -326,6 +326,7 @@
 </style>
 <script setup>
 import moment from 'moment'
+import jwt_decode from "jwt-decode"
 import { useRouter } from "vue-router"
 import Modal from 'bootstrap/js/dist/modal'
 import { onMounted, ref, reactive, onBeforeMount } from 'vue';
@@ -558,6 +559,15 @@ const showHideModal = (params) => {
   }
 }
 
+const userName = ref('')
+
+const getUserName = () => {
+  const token = localStorage.getItem('user')
+  const decoded = jwt_decode(token);
+  
+  userName.value = decoded.name
+}
+
 const router = useRouter()
 
 const goToSetting = () => {
@@ -580,6 +590,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  getUserName()
   getSetupConfig()
 
   qrModal.value = new Modal('#qr-code', {
