@@ -112,7 +112,6 @@
 			const data = JSON.parse(dataString);
 			window.onload = function(){
 				const content = document.getElementById('content')
-				const label = localStorage.getItem('RENDERER_VITE_KIOSK_LABEL')
 				content.innerHTML = ''
 				async function replaceData() {
 					for (const key of data.detail_ticket) {
@@ -181,7 +180,6 @@
 								<img style="height: 100%; width: auto;" src="${key.qr_path}" alt="">
 							</div>
 							<div style="text-align: center;">${data.booking_code}</div>
-							<div style="text-align: center; margin-bottom: 4px; text-transform: capitalize;">${label}</div>
 							<div style="text-align: center;">_</div>
 						`
 					}

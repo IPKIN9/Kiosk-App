@@ -152,7 +152,6 @@
 					</td>
 				</tr>
 			</table>
-			<div style="text-align: center; margin-top: 10px; text-transform: capitalize;" id="label2"></div>
 			<div style="text-align: center;">_</div>
 		<script>
 			const params = new URLSearchParams(window.location.search);
@@ -170,8 +169,6 @@
 
 						document.getElementById(key).innerHTML = data[key]
 					}
-
-					document.getElementById('label2').innerHTML = localStorage.getItem('RENDERER_VITE_KIOSK_LABEL')
 					window.api.invoke("ready-print", null)
 				}
 

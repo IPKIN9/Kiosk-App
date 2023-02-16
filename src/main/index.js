@@ -35,9 +35,9 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  // globalShortcut.register('F11', () => {
+  globalShortcut.register('F11', () => {
     
-  // })
+  })
 }
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
