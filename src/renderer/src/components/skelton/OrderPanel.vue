@@ -22,7 +22,7 @@
           <div class="container-fluid row">
             <div class="col-lg-12 mb-3">
               <SelectSearch v-model="customerName" :id-input="{search: 'customerSearch', select: 'customerSelect'}" 
-              :list-of-select="customerList" :list-config-display="customerDisplay" @search-event="getCustomerList()" @event-click="setCustomerPayload" />
+              :list-of-select="customerList" :list-config-display="customerDisplay" @search-event="searchCustomer" @event-click="setCustomerPayload" />
             </div>
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.name" label="Full Name" class="form-control-lg" :is-required="true"
@@ -331,6 +331,14 @@ const getCustomerList = () => {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
     }
   })
+}
+
+const searchCustomer = async () => {
+  if (customerName.value.length >= 1) {
+    getCustomerList()
+  } else {
+    customerList.value = []
+  }
 }
 
 const setCustomerPayload = (params) => {
