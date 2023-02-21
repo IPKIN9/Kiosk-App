@@ -113,7 +113,7 @@
 			window.onload = function(){
 				const content = document.getElementById('content')
 				content.innerHTML = ''
-				async function replaceData() {
+				function replaceData() {
 					for (const key of data.detail_ticket) {
 						content.innerHTML += `
 						<div class="invoice-box page">
@@ -184,10 +184,19 @@
 						`
 					}
 
-					window.api.invoke("ready-print", null)
+				}
+				
+				replaceData()
+
+				let img = document.getElementsByTagName('img')
+
+				for (const key in img) {
+					img[key].onload = () => {
+						// console.log();
+						window.api.invoke("ready-print", null)
+					}
 				}
 
-				replaceData()
 			}
 		</script>
   </body>

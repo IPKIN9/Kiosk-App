@@ -38,6 +38,16 @@ function createWindow() {
   // globalShortcut.register('F11', () => {
     
   // })
+
+  globalShortcut.register('F12', () => {
+    mainWindow.webContents.openDevTools()
+  })
+
+  globalShortcut.register('CommandOrControl+X', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
 }
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
