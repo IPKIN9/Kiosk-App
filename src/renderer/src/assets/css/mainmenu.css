@@ -65,3 +65,11 @@
   height: 2rem !important;
   margin-top: -5px;
 }
+
+.danger-input{
+  border-color: red !important;
+}
+
+.primary-input{
+  border-color: blue !important;
+}

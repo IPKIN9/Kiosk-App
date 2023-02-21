@@ -21,7 +21,7 @@ function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setFullScreen(true)
-    mainWindow.setAlwaysOnTop(true)
+    mainWindow.setAlwaysOnTop(false)
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -35,9 +35,9 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  globalShortcut.register('F11', () => {
+  // globalShortcut.register('F11', () => {
     
-  })
+  // })
 }
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
@@ -58,6 +58,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+app.disableHardwareAcceleration()
 
 let content = null
 

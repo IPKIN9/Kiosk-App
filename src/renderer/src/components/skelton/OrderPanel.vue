@@ -145,10 +145,9 @@
               <div class="col-lg-7">
                 <div class="d-flex">
                   <div class="flex-grow-1"><h3 class="card-title">Payment Info</h3></div>
-                  <div class=""><h3 class="card-title">Total Price: {{ Currency.rupiahValue(payInfo.total_price) }}</h3></div>
                 </div>
                 <ul class="list-group mb-5">
-                  <CurrencyInput :disabled="disabledTotalPrice" v-model="payPayload.total_receive" />
+                  <CurrencyInput :class="isMatch" :disabled="disabledTotalPrice" v-model="payPayload.total_receive" />
                   <span v-for="error in v2$.total_receive.$errors" :key="error.$uid">
                     <small class="text-danger text-lowercase">total receive {{ error.$message }}</small>
                   </span>
@@ -171,7 +170,13 @@
                     <span>: {{ payInfo.total_order }}</span>
                   </li>
                 </ul>
-                <ul class="list-group mt-5">
+                <ul class="list-group mt-3">
+                  <li class="list-group-item d-flex">
+                    <span class="col-lg-3 fs-3">Total price</span>
+                    <span class="fs-3">: {{ Currency.rupiahValue(payInfo.total_price) }}</span>
+                  </li>
+                </ul>
+                <ul class="list-group mt-3">
                   <li class="list-group-item d-flex">
                     <span class="col-lg-3">Ticket Selected</span>
                     <div class="row px-2">
@@ -356,7 +361,7 @@ const panelActive = ref("order");
 const orderPayload = reactive({
   event_id: null,
   tax: 0,
-  due_date: 2,
+  due_date: 180,
   order_detail: [],
 });
 
@@ -553,6 +558,16 @@ const setToOrderPanel = () => {
 
 // Payment function
 // ######################################################################
+const isMatch = computed(() => {
+  if (parseInt(Currency.unformat(payPayload.total_receive)) < parseInt(payInfo.total_price)) {
+    console.log(parseInt(Currency.unformat(payPayload.total_receive)) + '|' + parseInt(payInfo.total_price));
+    return 'danger-input'
+  } else if (parseInt(Currency.unformat(payPayload.total_receive)) >= parseInt(payInfo.total_price)) {
+    console.log(parseInt(Currency.unformat(payPayload.total_receive)) + '|' + parseInt(payInfo.total_price));
+    return 'primary-input'
+  }
+})
+
 const payInfo = reactive({
   no_order: '',
   booking_code: '',

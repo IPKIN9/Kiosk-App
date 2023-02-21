@@ -22,28 +22,28 @@
     </ul>
     <div class="row ms-4">
       <span>
-        Current time
+        {{ moment(currentTime).format('DD MMM, YYYY') }}
       </span>
       <span class="fs-3" style="margin-top: -5px;">
-        {{ currentTime }}
+        {{ moment(currentTime).format('HH:mm:ss') }}
       </span>
     </div>
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router'
-import Time from '../../utils/Time';
 import Sweetalert from '../../utils/Sweetalert'
-import Invoke from '../../utils/Invoke';
+import Invoke from '../../utils/Invoke'
+import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import moment from 'moment'
 
 const router = useRouter()
 
 const currentTime = ref()
 const getCurrentTime = () => {
   setInterval(() => {
-    currentTime.value = Time()
-  }, 1000);
+    currentTime.value = new Date()
+  }, 1000)
 }
 
 const logOut = () => {
