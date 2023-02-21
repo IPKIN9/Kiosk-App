@@ -98,10 +98,10 @@
                   label="Select Area" />
               </div>
               <div class="col-lg-2">
-                <select @change="getTicketList()" v-model="ticketParams.limit" :disabled="ticketList.length >= 1 ? false : true" class="form-select form-control-lg">
-                  <option class="fs-3 my-1" value="60">Show of 60</option>
+                <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketList.length >= 1 ? false : true" class="form-select form-control-lg">
                   <option class="fs-3 my-1" value="120">Show of 120</option>
                   <option class="fs-3 my-1" value="240">Show of 240</option>
+                  <option class="fs-3 my-1" value="480">Show of 480</option>
                 </select>
               </div>
               <div class="col-lg-6">
@@ -112,15 +112,29 @@
               </div>
             </div>
             <div class="row mt-3 mx-1 table-responsive text-nowrap border border-1 rounded p-3" style="height: 65vh">
-              <div v-if="ticketList.length <= 0" class="text-center mt-5">
-                <h2>Select Event Area Please</h2>
+              <div class="col-lg-1 text-center">
+                <span class="form-label">Selected <i class="fa-solid fa-cart-shopping"></i></span>
+                <div class="mt-3">
+                  <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-5">
+                    {{ ticket.bench_number }}
+                  </div>
+                </div>
               </div>
-              <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-1">
-                <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
-                :id="ticket.bench_number" 
-                class="card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : 'bg-cs-muted disabled'">
-                  {{ ticket.bench_number }}
-                </a>
+              <div class="col-lg">
+                <div v-if="ticketList.length <= 0" class="text-center mt-5">
+                  <h2>Select Event Area Please</h2>
+                </div>
+                <div class="container">
+                  <div class="row row-cols-6">
+                    <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-2 col-sm-3">
+                      <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
+                      :id="`ticketId-${ticket.id}`" 
+                      class="ticket-button card py-4 text-white text-center fs-6 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
+                        {{ Other.getNumberOnly(ticket.bench_number) }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="d-flex justify-content-between mt-2">
@@ -278,32 +292,34 @@
 </style>
 
 <script setup>
-import { ref, reactive, watch, computed, onMounted, onBeforeMount } from "vue";
 import { required, numeric, minLength, maxLength, helpers, email } from '@vuelidate/validators'
-import { useRouter } from 'vue-router'
+import { ref, reactive, watch, computed, onMounted, onBeforeMount } from "vue";
 import { useVuelidate } from '@vuelidate/core'
 import Modal from 'bootstrap/js/dist/modal'
+import { useRouter } from 'vue-router'
 import moment from 'moment'
-import Customer from "../../utils/Customer"
-import EventArea from "../../utils/EventArea";
-import Ticket from "../../utils/Ticket";
-import Payment from "../../utils/Payment"
-import Order from "../../utils/Order"
-import Currency from "../../utils/Currency"
-import BaseModal from "../BaseModal.vue";
-import orderIcon from "../../assets/img/checkout.png";
-import NumericPad from "../input/NumericPad.vue"
-import BaseInput from "../input/BaseInput.vue";
-import BaseSelect from "../input/BaseSelect.vue";
+
 import BaseSelectSearch from "../input/BaseSelectSearch.vue";
+import CurrencyInput from "../input/CurrencyInput.vue";
+import orderIcon from "../../assets/img/checkout.png";
 import SelectSearch from "../input/SelectSearch.vue";
 import BaseTextArea from "../input/BaseTextArea.vue";
 import BaseButton from "../Button/BaseButton.vue";
-import Paggination from "../Paggination.vue";
+import NumericPad from "../input/NumericPad.vue"
+import BaseSelect from "../input/BaseSelect.vue";
 import Sweetalert from "../../utils/Sweetalert";
-import Invoke from "../../utils/Invoke";
-import CurrencyInput from "../input/CurrencyInput.vue";
+import BaseInput from "../input/BaseInput.vue";
 import AuthCheck from "../../utils/AuthCheck";
+import EventArea from "../../utils/EventArea";
+import Paggination from "../Paggination.vue";
+import Customer from "../../utils/Customer"
+import Currency from "../../utils/Currency"
+import BaseModal from "../BaseModal.vue";
+import Payment from "../../utils/Payment"
+import Invoke from "../../utils/Invoke";
+import Ticket from "../../utils/Ticket";
+import Order from "../../utils/Order"
+import Other from '../../utils/Other'
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -361,7 +377,7 @@ const panelActive = ref("order");
 const orderPayload = reactive({
   event_id: null,
   tax: 0,
-  due_date: 180,
+  due_date: 2,
   order_detail: [],
 });
 
@@ -452,7 +468,7 @@ const orderProccess = async () => {
 // ######################################################################
 const ticketParams = reactive({
   eventarea: 0,
-  limit: 60,
+  limit: 120,
   page: 1,
   total: 0,
   search: ''
@@ -498,12 +514,26 @@ const setArea = (params) => {
 
 const ticketList = ref([]);
 
+const disabledSelectedTicket = () => {
+  ticketList.value.splice(0, ticketList.value.length);
+}
+
 const getTicketList = () => {
   Ticket.getList(ticketParams)
-    .then((res) => {
-      let item = res.data;
-      ticketList.value = item.data;
-      ticketParams.total = item.meta.total
+  .then((res) => {
+
+    let item = res.data;
+    ticketList.value = item.data;
+    ticketParams.total = item.meta.total
+
+    for (const key in ticketList.value) {
+      for (const itr of ticketSelectedList.value) {
+        if (ticketList.value[key].id == itr.id) {
+          ticketList.value[key].status = 'selected'
+        }
+      }
+    }
+
     })
     .catch((err) => {
       if (err.response) {
@@ -515,17 +545,18 @@ const getTicketList = () => {
     });
 };
 
-
 const paginateTicket = (params) => {
+  disabledSelectedTicket()
   ticketParams.page = params
   getTicketList()
+
 }
 
 const ticketSelectedList = ref([])
 
 const ticketSelected = (params) => {
-  let button = document.getElementById(`${params.bench_number}`)
-
+  let button = document.getElementById(`ticketId-${params.id}`)
+  
   if (button.classList.contains('bg-cs-seat') && ticketSelectedList.value.length < 10) {
     ticketSelectedList.value.push(params)
 
@@ -794,6 +825,24 @@ const cancelOrdered = () => {
   })
 }
 
+const merchantName = ref('')
+const getMerchantName = () => {
+  let merchantId = localStorage.getItem('RENDERER_VITE_MERCHANT_ID')
+  Merchant.getDetail(merchantId)
+  .then((res) => {
+    let item = res.data
+    merchantName.value = item.data.name
+  })
+  .catch((err) => {
+    if (err.response) {
+      let code = err.response.status
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
+  })
+}
+
 const printButton = ref(false)
 
 const printStruct = async () => {
@@ -801,6 +850,7 @@ const printStruct = async () => {
 
   const structData = {
     path_file: 'invoice.html',
+    merchant: merchantName.value,
     label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
@@ -862,7 +912,7 @@ const clearCustomer = () => {
 }
 
 const clearticketParams = () => {
-  ticketParams.limit = 60
+  ticketParams.limit = 120
   ticketParams.page = 1
   ticketParams.total = 0
   ticketParams.status = 'ready'
@@ -936,6 +986,8 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  getMerchantName()
+
   orderModal.value = new Modal('#orderedModal', {
 		keyboard: false
 	})
