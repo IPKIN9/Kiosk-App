@@ -67,9 +67,9 @@
 }
 
 .danger-input{
-  border-color: red !important;
+  color: red !important;
 }
 
 .primary-input{
-  border-color: blue !important;
+  color: blue !important;
 }

@@ -165,6 +165,13 @@
 			const encodedData = params.get('data');
 			const dataString = decodeURIComponent(encodedData);
 			const data = JSON.parse(dataString);
+			function rupiahValue(number) {
+				let rupiah = "";
+				let numberrev = number.toString().split("").reverse().join("");
+				for (let i = 0; i < numberrev.length; i++) if (i % 3 == 0) rupiah += numberrev.substr(i, 3) + ".";
+				return rupiah.split("", rupiah.length - 1).reverse().join("");
+			}
+
 			window.onload = function(){
 				const content = document.getElementById('content')
 				
@@ -173,8 +180,12 @@
 						if (key == 'path_file') {
 							continue
 						}
-
-						document.getElementById(key).innerHTML = data[key]
+						if (key == 'total_price_receive') {
+							document.getElementById(key).innerHTML = rupiahValue(data[key])
+						} else {
+							document.getElementById(key).innerHTML = data[key]
+						}
+						
 					}
 					window.api.invoke("ready-print", null)
 				}

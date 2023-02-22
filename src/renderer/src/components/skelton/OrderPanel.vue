@@ -208,7 +208,7 @@
                 </ul>
                 <div class="mt-3 row">
                   <div class="col-lg-3">
-                    <a @click="sendPayment" :class="payInfo.status === 'progress' ? 'disabled' : payInfo.status === 'validated' ? 'disabled' : ''" role="button" class="card bg-cs-orange text-white text-center py-3 mt-2">
+                    <a @click="sendPayment" :class="payInfo.status === 'progress' ? 'disabled' : payInfo.status === 'validated' ? 'disabled' : isMatch === 'danger-input' ? 'disabled' : ''" role="button" class="card bg-cs-orange text-white text-center py-3 mt-2">
                       <span class="fs-3">
                         Pay Now
                       </span>
@@ -592,11 +592,11 @@ const setToOrderPanel = () => {
 // ######################################################################
 const isMatch = computed(() => {
   if (parseInt(Currency.unformat(payPayload.total_receive)) < parseInt(payInfo.total_price)) {
-    console.log(parseInt(Currency.unformat(payPayload.total_receive)) + '|' + parseInt(payInfo.total_price));
     return 'danger-input'
   } else if (parseInt(Currency.unformat(payPayload.total_receive)) >= parseInt(payInfo.total_price)) {
-    console.log(parseInt(Currency.unformat(payPayload.total_receive)) + '|' + parseInt(payInfo.total_price));
     return 'primary-input'
+  } else {
+    return 'danger-input'
   }
 })
 
