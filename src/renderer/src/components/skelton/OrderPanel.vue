@@ -117,8 +117,8 @@
               </div>
               <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-1">
                 <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
-                :id="ticket.bench_number" 
-                class="card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : 'bg-cs-muted disabled'">
+                :id="`ticketId-${ticket.id}`" 
+                class="ticket-button card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
                   {{ ticket.bench_number }}
                 </a>
               </div>
@@ -361,7 +361,7 @@ const panelActive = ref("order");
 const orderPayload = reactive({
   event_id: null,
   tax: 0,
-  due_date: 180,
+  due_date: 2,
   order_detail: [],
 });
 
@@ -498,12 +498,26 @@ const setArea = (params) => {
 
 const ticketList = ref([]);
 
+const disabledSelectedTicket = () => {
+  ticketList.value.splice(0, ticketList.value.length);
+}
+
 const getTicketList = () => {
   Ticket.getList(ticketParams)
-    .then((res) => {
-      let item = res.data;
-      ticketList.value = item.data;
-      ticketParams.total = item.meta.total
+  .then((res) => {
+
+    let item = res.data;
+    ticketList.value = item.data;
+    ticketParams.total = item.meta.total
+
+    for (const key in ticketList.value) {
+      for (const itr of ticketSelectedList.value) {
+        if (ticketList.value[key].id == itr.id) {
+          ticketList.value[key].status = 'selected'
+        }
+      }
+    }
+
     })
     .catch((err) => {
       if (err.response) {
@@ -515,17 +529,18 @@ const getTicketList = () => {
     });
 };
 
-
 const paginateTicket = (params) => {
+  disabledSelectedTicket()
   ticketParams.page = params
   getTicketList()
+
 }
 
 const ticketSelectedList = ref([])
 
 const ticketSelected = (params) => {
-  let button = document.getElementById(`${params.bench_number}`)
-
+  let button = document.getElementById(`ticketId-${params.id}`)
+  
   if (button.classList.contains('bg-cs-seat') && ticketSelectedList.value.length < 10) {
     ticketSelectedList.value.push(params)
 
