@@ -7,5 +7,8 @@ export default {
   },
   ping(){
     return window.api.ping()
+  },
+  flushLocalStorage(){
+    return window.api.flushLocalStorage()
   }
 };

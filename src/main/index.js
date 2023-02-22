@@ -119,6 +119,10 @@ ipcMain.handle("printStruct", async (event, arg) => {
   printStruct(arg, sendFeedBack)
 });
 
+// ipcMain.handle("flushLocalStorage", async () => {
+  
+// })
+
 ipcMain.handle('shutdown', async (event) => {
   const windows = BrowserWindow.getAllWindows()
   windows.forEach(win => {

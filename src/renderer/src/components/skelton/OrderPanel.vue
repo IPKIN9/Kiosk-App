@@ -111,16 +111,16 @@
                 </div>
               </div>
             </div>
-            <div class="row mt-3 mx-1 table-responsive text-nowrap border border-1 rounded p-3" style="height: 65vh">
-              <div class="col-lg-1 text-center">
-                <span class="form-label">Selected <i class="fa-solid fa-cart-shopping"></i></span>
+            <div class="row mt-3 mx-1 border border-1 rounded p-3" style="height: 65vh">
+              <div v-if="ticketSelectedList.length >= 1" class="col-lg-2 text-center border-end">
+                <span class="form-label fs-5">Selected Ticket</span>
                 <div class="mt-3">
-                  <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-5">
+                  <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-6">
                     {{ ticket.bench_number }}
                   </div>
                 </div>
               </div>
-              <div class="col-lg">
+              <div class="col-lg table-responsive text-nowrap" style="height: 60vh">
                 <div v-if="ticketList.length <= 0" class="text-center mt-5">
                   <h2>Select Event Area Please</h2>
                 </div>

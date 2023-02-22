@@ -102,13 +102,14 @@ const getEvent = () => {
       loading.value = false
     })
     .catch((err) => {
-      if (err.response) {
-        let code = err.response.status
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-      } else {
-        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-      }
-      loading.value = false
+      // if (err.response) {
+      //   let code = err.response.status
+      //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      // } else {
+      //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      // }
+      // loading.value = false
+      console.log(err);
     })
 }
 

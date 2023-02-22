@@ -366,12 +366,12 @@ const getOrderList = () => {
       meta.total = item.meta.total
     })
     .catch((err) => {
-      // if (err.response) {
-      //   let code = err.response.status
-      //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-      // } else {
-      //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-      // }
+      if (err.response && err.response.status != 0) {
+        let code = err.response.status
+        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      } else {
+        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      }
     })
 }
 
@@ -422,13 +422,12 @@ const getOrderDetail = (orderId) => {
   .catch((err) => {
     qrModal.value.hide()
     detailModal.value.hide()
-    console.log(err);
-    // if (err.response) {
-    //   let code = err.response.status
-    //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-    // } else {
-    //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-    // }
+    if (err.response) {
+      let code = err.response.status
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
   })
 }
 
@@ -467,13 +466,12 @@ const getMerchantName = () => {
   .catch((err) => {
     qrModal.value.hide()
     detailModal.value.hide()
-    console.log(err);
-    // if (err.response) {
-    //   let code = err.response.status
-    //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-    // } else {
-    //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-    // }
+    if (err.response) {
+      let code = err.response.status
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
   })
 }
 

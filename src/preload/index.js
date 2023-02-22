@@ -5,7 +5,8 @@ const api = {
   invoke: (channel, data) => {
 		return ipcRenderer.invoke(channel, data); 
 	},
-  ping: () => ipcRenderer.invoke('ping')
+  ping: () => ipcRenderer.invoke('ping'),
+  flushLocalStorage: () => ipcRenderer.invoke('flushLocalStorage')
 }
 
 if (process.contextIsolated) {
