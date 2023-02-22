@@ -825,6 +825,24 @@ const cancelOrdered = () => {
   })
 }
 
+const merchantName = ref('')
+const getMerchantName = () => {
+  let merchantId = localStorage.getItem('RENDERER_VITE_MERCHANT_ID')
+  Merchant.getDetail(merchantId)
+  .then((res) => {
+    let item = res.data
+    merchantName.value = item.data.name
+  })
+  .catch((err) => {
+    if (err.response) {
+      let code = err.response.status
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
+  })
+}
+
 const printButton = ref(false)
 
 const printStruct = async () => {
@@ -832,6 +850,7 @@ const printStruct = async () => {
 
   const structData = {
     path_file: 'invoice.html',
+    merchant: merchantName.value,
     label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
@@ -967,6 +986,8 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  getMerchantName()
+
   orderModal.value = new Modal('#orderedModal', {
 		keyboard: false
 	})

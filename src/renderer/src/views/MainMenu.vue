@@ -337,6 +337,7 @@ import BaseButton from '../components/Button/BaseButton.vue'
 import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
 import TimeWithShutdown from '../components/skelton/TimeWithShutdown.vue';
+import Merchant from '../utils/Merchant'
 import Order from '../utils/Order'
 import Invoke from '../utils/Invoke';
 import Currency from '../utils/Currency'
@@ -419,7 +420,6 @@ const getOrderDetail = (orderId) => {
     }
   })
   .catch((err) => {
-    console.log(err)
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
@@ -453,12 +453,31 @@ const addTicketList = (params) => {
 const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
 const printButton = ref(false)
 
+const merchantName = ref('')
+const getMerchantName = () => {
+  let merchantId = localStorage.getItem('RENDERER_VITE_MERCHANT_ID')
+  Merchant.getDetail(merchantId)
+  .then((res) => {
+    let item = res.data
+    merchantName.value = item.data.name
+  })
+  .catch((err) => {
+    if (err.response) {
+      let code = err.response.status
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
+  })
+}
+
 const printQr = async (type) => {
   printButton.value = true
 
   let struk = orderDetail.detail_ticket
   const structData = {
     path_file: 'struct.html',
+    merchant: merchantName.value,
     label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: orderDetail.order.no_order,
     booking_code: orderDetail.order.booking_code,
@@ -592,6 +611,7 @@ onBeforeMount(() => {
 onMounted(() => {
   getUserName()
   getSetupConfig()
+  getMerchantName()
 
   qrModal.value = new Modal('#qr-code', {
 		keyboard: false
