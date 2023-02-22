@@ -98,10 +98,10 @@
                   label="Select Area" />
               </div>
               <div class="col-lg-2">
-                <select @change="getTicketList()" v-model="ticketParams.limit" :disabled="ticketList.length >= 1 ? false : true" class="form-select form-control-lg">
-                  <option class="fs-3 my-1" value="60">Show of 60</option>
+                <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketList.length >= 1 ? false : true" class="form-select form-control-lg">
                   <option class="fs-3 my-1" value="120">Show of 120</option>
                   <option class="fs-3 my-1" value="240">Show of 240</option>
+                  <option class="fs-3 my-1" value="480">Show of 480</option>
                 </select>
               </div>
               <div class="col-lg-6">
@@ -115,12 +115,23 @@
               <div v-if="ticketList.length <= 0" class="text-center mt-5">
                 <h2>Select Event Area Please</h2>
               </div>
-              <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-1">
+              <!-- <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-1">
                 <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
                 :id="`ticketId-${ticket.id}`" 
                 class="ticket-button card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
                   {{ ticket.bench_number }}
                 </a>
+              </div> -->
+              <div class="container">
+                <div class="row row-cols-6">
+                  <div v-for="(ticket, index) in ticketList" :key="index" class="col">
+                    <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
+                    :id="`ticketId-${ticket.id}`" 
+                    class="ticket-button card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
+                      {{ ticket.bench_number }}
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="d-flex justify-content-between mt-2">
@@ -452,7 +463,7 @@ const orderProccess = async () => {
 // ######################################################################
 const ticketParams = reactive({
   eventarea: 0,
-  limit: 60,
+  limit: 120,
   page: 1,
   total: 0,
   search: ''
@@ -877,7 +888,7 @@ const clearCustomer = () => {
 }
 
 const clearticketParams = () => {
-  ticketParams.limit = 60
+  ticketParams.limit = 120
   ticketParams.page = 1
   ticketParams.total = 0
   ticketParams.status = 'ready'
