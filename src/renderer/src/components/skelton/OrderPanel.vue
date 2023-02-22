@@ -112,24 +112,27 @@
               </div>
             </div>
             <div class="row mt-3 mx-1 table-responsive text-nowrap border border-1 rounded p-3" style="height: 65vh">
-              <div v-if="ticketList.length <= 0" class="text-center mt-5">
-                <h2>Select Event Area Please</h2>
+              <div class="col-lg-1 text-center">
+                <span class="form-label">Selected <i class="fa-solid fa-cart-shopping"></i></span>
+                <div class="mt-3">
+                  <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-5">
+                    {{ ticket.bench_number }}
+                  </div>
+                </div>
               </div>
-              <!-- <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-1">
-                <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
-                :id="`ticketId-${ticket.id}`" 
-                class="ticket-button card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
-                  {{ ticket.bench_number }}
-                </a>
-              </div> -->
-              <div class="container">
-                <div class="row row-cols-6">
-                  <div v-for="(ticket, index) in ticketList" :key="index" class="col">
-                    <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
-                    :id="`ticketId-${ticket.id}`" 
-                    class="ticket-button card py-4 text-white text-center fs-5 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
-                      {{ ticket.bench_number }}
-                    </a>
+              <div class="col-lg">
+                <div v-if="ticketList.length <= 0" class="text-center mt-5">
+                  <h2>Select Event Area Please</h2>
+                </div>
+                <div class="container">
+                  <div class="row row-cols-6">
+                    <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-2 col-sm-3">
+                      <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
+                      :id="`ticketId-${ticket.id}`" 
+                      class="ticket-button card py-4 text-white text-center fs-6 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
+                        {{ Other.getNumberOnly(ticket.bench_number) }}
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -289,32 +292,34 @@
 </style>
 
 <script setup>
-import { ref, reactive, watch, computed, onMounted, onBeforeMount } from "vue";
 import { required, numeric, minLength, maxLength, helpers, email } from '@vuelidate/validators'
-import { useRouter } from 'vue-router'
+import { ref, reactive, watch, computed, onMounted, onBeforeMount } from "vue";
 import { useVuelidate } from '@vuelidate/core'
 import Modal from 'bootstrap/js/dist/modal'
+import { useRouter } from 'vue-router'
 import moment from 'moment'
-import Customer from "../../utils/Customer"
-import EventArea from "../../utils/EventArea";
-import Ticket from "../../utils/Ticket";
-import Payment from "../../utils/Payment"
-import Order from "../../utils/Order"
-import Currency from "../../utils/Currency"
-import BaseModal from "../BaseModal.vue";
-import orderIcon from "../../assets/img/checkout.png";
-import NumericPad from "../input/NumericPad.vue"
-import BaseInput from "../input/BaseInput.vue";
-import BaseSelect from "../input/BaseSelect.vue";
+
 import BaseSelectSearch from "../input/BaseSelectSearch.vue";
+import CurrencyInput from "../input/CurrencyInput.vue";
+import orderIcon from "../../assets/img/checkout.png";
 import SelectSearch from "../input/SelectSearch.vue";
 import BaseTextArea from "../input/BaseTextArea.vue";
 import BaseButton from "../Button/BaseButton.vue";
-import Paggination from "../Paggination.vue";
+import NumericPad from "../input/NumericPad.vue"
+import BaseSelect from "../input/BaseSelect.vue";
 import Sweetalert from "../../utils/Sweetalert";
-import Invoke from "../../utils/Invoke";
-import CurrencyInput from "../input/CurrencyInput.vue";
+import BaseInput from "../input/BaseInput.vue";
 import AuthCheck from "../../utils/AuthCheck";
+import EventArea from "../../utils/EventArea";
+import Paggination from "../Paggination.vue";
+import Customer from "../../utils/Customer"
+import Currency from "../../utils/Currency"
+import BaseModal from "../BaseModal.vue";
+import Payment from "../../utils/Payment"
+import Invoke from "../../utils/Invoke";
+import Ticket from "../../utils/Ticket";
+import Order from "../../utils/Order"
+import Other from '../../utils/Other'
 
 const titlePanel = ref("CUSTOMER FORM");
 
