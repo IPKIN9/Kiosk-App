@@ -319,7 +319,8 @@ import Payment from "../../utils/Payment"
 import Invoke from "../../utils/Invoke";
 import Ticket from "../../utils/Ticket";
 import Order from "../../utils/Order"
-import Other from '../../utils/Other'
+import Other from "../../utils/Other"
+import Merchant from "../../utils/Merchant"
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -873,6 +874,7 @@ const printQr = async () => {
   let struk = strukInvoice.value.detail_ticket
   const structData = {
     path_file: 'struct.html',
+    merchant: merchantName.value,
     label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,

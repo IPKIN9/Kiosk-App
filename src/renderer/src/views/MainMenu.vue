@@ -337,10 +337,10 @@ import BaseButton from '../components/Button/BaseButton.vue'
 import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
 import TimeWithShutdown from '../components/skelton/TimeWithShutdown.vue';
-import Merchant from '../utils/Merchant'
 import Order from '../utils/Order'
 import Invoke from '../utils/Invoke';
 import Currency from '../utils/Currency'
+import Merchant from '../utils/Merchant'
 import AuthCheck from '../utils/AuthCheck'
 import Sweetalert from '../utils/Sweetalert'
 
@@ -366,12 +366,12 @@ const getOrderList = () => {
       meta.total = item.meta.total
     })
     .catch((err) => {
-      if (err.response) {
-        let code = err.response.status
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-      } else {
-        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-      }
+      // if (err.response) {
+      //   let code = err.response.status
+      //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      // } else {
+      //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      // }
     })
 }
 
@@ -420,12 +420,15 @@ const getOrderDetail = (orderId) => {
     }
   })
   .catch((err) => {
-    if (err.response) {
-      let code = err.response.status
-      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-    } else {
-      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-    }
+    qrModal.value.hide()
+    detailModal.value.hide()
+    console.log(err);
+    // if (err.response) {
+    //   let code = err.response.status
+    //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    // } else {
+    //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    // }
   })
 }
 
@@ -462,12 +465,15 @@ const getMerchantName = () => {
     merchantName.value = item.data.name
   })
   .catch((err) => {
-    if (err.response) {
-      let code = err.response.status
-      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
-    } else {
-      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-    }
+    qrModal.value.hide()
+    detailModal.value.hide()
+    console.log(err);
+    // if (err.response) {
+    //   let code = err.response.status
+    //   Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+    // } else {
+    //   Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    // }
   })
 }
 
