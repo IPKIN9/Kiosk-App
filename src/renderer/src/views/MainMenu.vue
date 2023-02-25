@@ -422,7 +422,7 @@ const getOrderDetail = (orderId) => {
   .catch((err) => {
     qrModal.value.hide()
     detailModal.value.hide()
-    if (err.response) {
+    if (err.response && err.response.status != 0) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
     } else {
@@ -466,7 +466,7 @@ const getMerchantName = () => {
   .catch((err) => {
     qrModal.value.hide()
     detailModal.value.hide()
-    if (err.response) {
+    if (err.response && err.response.status != 0) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
     } else {
@@ -613,16 +613,16 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  qrModal.value = new Modal('#qr-code', {
+    keyboard: false
+	})
+  detailModal.value = new Modal('#detail-order', {
+    keyboard: false
+	})
+  
   getUserName()
   getSetupConfig()
   getMerchantName()
-
-  qrModal.value = new Modal('#qr-code', {
-		keyboard: false
-	})
-  detailModal.value = new Modal('#detail-order', {
-		keyboard: false
-	})
   getOrderList()
 })
 </script>

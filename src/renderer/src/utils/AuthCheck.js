@@ -66,6 +66,12 @@ export default {
         msg = 'Bad Request. Check format and try again.'
         break;
 
+      case 422:
+        msg = 'Sorry, please check your setting again!.'
+        localStorage.setItem('RENDERER_VITE_MERCHANT_ID', 1)
+        localStorage.setItem('IS_CONFIG', false)
+        break;
+
       case 403:
         msg = 'Forbidden. You do not have the required permissions to access this resource.'
         break;

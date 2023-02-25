@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: selfgate-kiosk
+appId: wovi.id
+productName: wovi-kiosk
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ asarUnpack:
   - resources/*
 afterSign: build/notarize.js
 win:
-  executableName: Selfgate Kiosk
+  executableName: WOvi Kiosk
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

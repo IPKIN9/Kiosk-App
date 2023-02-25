@@ -35,18 +35,16 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  // globalShortcut.register('F11', () => {
+  globalShortcut.register('F11', () => {
     
-  // })
-
-  globalShortcut.register('F12', () => {
-    mainWindow.webContents.openDevTools()
   })
 
-  globalShortcut.register('CommandOrControl+X', () => {
-    if (process.platform !== 'darwin') {
-      app.quit()
-    }
+  // globalShortcut.register('F12', () => {
+  //   mainWindow.webContents.openDevTools()
+  // })
+
+  globalShortcut.register('CommandOrControl+Shift+X', () => {
+    app.quit()
   })
 }
 app.whenReady().then(() => {
@@ -64,9 +62,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
 app.disableHardwareAcceleration()
@@ -134,7 +130,6 @@ ipcMain.handle('shutdown', async (event) => {
       console.error(`exec error: ${error}`);
       return;
     }
-    
-    if (process.platform !== "darwin") app.quit();
+    app.quit();
   });
 });

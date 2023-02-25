@@ -11,7 +11,7 @@ export default {
   alertError (text) {
     return Swal.fire({
       icon: 'warning',
-      title: 'Error!',
+      title: 'Oops!',
       text: text
     })
   },
