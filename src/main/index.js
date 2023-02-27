@@ -44,6 +44,10 @@ function createWindow() {
   // })
 
   globalShortcut.register('CommandOrControl+Shift+X', () => {
+    const windows = BrowserWindow.getAllWindows()
+    windows.forEach(win => {
+      win.close()
+    })
     app.quit()
   })
 }
@@ -62,10 +66,14 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
+  const windows = BrowserWindow.getAllWindows()
+  windows.forEach(win => {
+    win.close()
+  })
   app.quit()
 })
 
-app.disableHardwareAcceleration()
+// app.disableHardwareAcceleration()
 
 let content = null
 

@@ -130,7 +130,7 @@
                       <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
                       :id="`ticketId-${ticket.id}`" 
                       class="ticket-button card py-4 text-white text-center fs-6 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
-                        {{ Other.getNumberOnly(ticket.bench_number) }}
+                        {{ ticket.bench_number }}
                       </a>
                     </div>
                   </div>
