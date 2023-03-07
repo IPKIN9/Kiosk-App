@@ -9,7 +9,7 @@
           <div class="d-flex">
             <span class="fs-2 fw-bold">KIOSK</span>
             <div class="flex-grow-1">
-              <button type="button" class="btn indicator rounded-pill btn-icon btn-success">
+              <button type="button" class="btn indicator rounded-pill btn-icon" :class="connected ? ' btn-success':' btn-danger'">
               </button>
             </div>
             <span @click="goToSetting"><i class="fs-3 fa-solid fa-gear"></i></span>
@@ -343,6 +343,7 @@ import Currency from '../utils/Currency'
 import Merchant from '../utils/Merchant'
 import AuthCheck from '../utils/AuthCheck'
 import Sweetalert from '../utils/Sweetalert'
+import HeartBeat from '../utils/HeartBeat'
 
 // GET FUNCTION
 // ##########################################################
@@ -612,8 +613,24 @@ onBeforeMount(() => {
   }
 })
 
+const connected = ref(false)
+const checkConnection = () => {
+  HeartBeat.check()
+  .then((res) => {
+    connected.value = true
+  })
+  .catch((err) => {
+    connected.value = false
+  })
+}
+
+const interval = setInterval(() => {
+  checkConnection()
+}, 1000)
+
 onMounted(() => {
   try {
+    interval
     qrModal.value = new Modal('#qr-code', {
       keyboard: false
     })
@@ -626,6 +643,7 @@ onMounted(() => {
     getMerchantName()
     getOrderList()
   } catch (error) {
+    clearInterval(interval)
     console.log(error);
   }
 })
