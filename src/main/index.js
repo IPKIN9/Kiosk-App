@@ -35,13 +35,9 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  globalShortcut.register('F11', () => {
-    
+  globalShortcut.register('F12', () => {
+    mainWindow.webContents.openDevTools()
   })
-
-  // globalShortcut.register('F12', () => {
-  //   mainWindow.webContents.openDevTools()
-  // })
 
   globalShortcut.register('CommandOrControl+Shift+X', () => {
     const windows = BrowserWindow.getAllWindows()

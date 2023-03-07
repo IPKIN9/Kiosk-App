@@ -613,16 +613,20 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  qrModal.value = new Modal('#qr-code', {
-    keyboard: false
-	})
-  detailModal.value = new Modal('#detail-order', {
-    keyboard: false
-	})
-  
-  getUserName()
-  getSetupConfig()
-  getMerchantName()
-  getOrderList()
+  try {
+    qrModal.value = new Modal('#qr-code', {
+      keyboard: false
+    })
+    detailModal.value = new Modal('#detail-order', {
+      keyboard: false
+    })
+    
+    getUserName()
+    getSetupConfig()
+    getMerchantName()
+    getOrderList()
+  } catch (error) {
+    console.log(error);
+  }
 })
 </script>

@@ -139,7 +139,11 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  getEvent()
-  sendEventData({ id: 0, name: '' })
+  try {
+    getEvent()
+    sendEventData({ id: 0, name: '' })
+  } catch (error) {
+    console.log(error);
+  }
 })
 </script>

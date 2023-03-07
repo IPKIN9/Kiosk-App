@@ -988,11 +988,15 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  orderModal.value = new Modal('#orderedModal', {
-    keyboard: false
-	})
-  
-  getMerchantName()
-  getPaymentList()
+  try {
+    orderModal.value = new Modal('#orderedModal', {
+      keyboard: false
+    })
+    
+    getMerchantName()
+    getPaymentList()
+  } catch (error) {
+    console.log(error);
+  }
 })
 </script>
