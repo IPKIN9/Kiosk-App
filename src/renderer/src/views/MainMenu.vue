@@ -162,6 +162,7 @@
       </div>
     </template>
   </BaseModal>
+
   <BaseModal @click-event="showHideModal({model: 'detail-order', type:'close'})" label="Detail Order" sizing="modal-xl" modal-id="detail-order">
     <template v-slot:body>
       <div class="span card-title" style="margin-top: -25px !important;">
@@ -253,8 +254,13 @@
             </li>
             <li class="list-group mt-3">
               <div class="row">
-                <div class="col-lg-3 form-label my-label text-muted">Event address</div>
-                <div class="col-lg-11">{{ orderDetail.event.address }}</div>
+                <div class="col-lg">
+                  <div class=" form-label my-label text-muted">Event address</div>
+                  <div class="">{{ orderDetail.event.address }} lore</div>
+                </div>
+              </div>
+              <div class="row mt-5">
+                <div class="col-lg-4"><button class="btn btn-danger btn-lg">REFUND</button></div>
               </div>
             </li>
           </ul>
