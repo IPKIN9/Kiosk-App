@@ -11,5 +11,5 @@ export default {
 
     upsertRefund (payload) {
         return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).post(endPoint, payload, AuthCheck.tokenConfig())
-    },
+    }
 }

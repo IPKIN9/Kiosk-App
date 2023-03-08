@@ -260,7 +260,7 @@
                 </div>
               </div>
               <div class="row mt-5">
-                <div class="col-lg-4"><button class="btn btn-danger btn-lg">REFUND</button></div>
+                <div class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id})" class="btn btn-danger btn-lg">REFUND</button></div>
               </div>
             </li>
           </ul>
@@ -324,6 +324,42 @@
     </template>
   </BaseModal>
 
+  <BaseModal @click-event="showHideModal({model: 'confirm-modal', type:'close'})" label="" sizing="" modal-id="confirm-modal">
+    <template v-slot:body>
+      <div class="px-4" style="margin-top: -65px !important;">
+        <h3 class="text-center" >Confirmation</h3>
+        <div class="form-group mt-5">
+          <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" />
+          <div v-if="message != null">
+            <span v-for="error in v3$.username.$errors" :key="error.$uid">
+              <small class="text-danger text-lowercase">{{ error.$message }}</small>
+            </span>
+          </div>
+        </div>
+        <div class="form-password-toggle mt-3">
+          <label class="form-label" for="basic-default-password12">Password</label>
+          <div class="input-group">
+            <input v-model="loginPayload.password" :type="isHidden ? 'password':'text'" class="form-control" placeholder="············" aria-describedby="basic-default-password2">
+            <span @click="passHidden" class="input-group-text cursor-pointer"><i :class="isHidden? 'bx bx-hide':'bx bx-show'"></i></span>
+          </div>
+          <div v-if="message != null">
+            <span v-for="error in v3$.password.$errors" :key="error.$uid">
+            <small class="text-danger text-lowercase">{{ error.$message }}</small>
+          </span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <div>
+            <button type="button" class="btn btn-primary btn-lg me-5" @click="loginProcess()">Confirm</button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-danger btn-lg ms-5" @click="showHideModal({model: 'confirm-modal', type: 'close'})">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </template>
+  </BaseModal>
+
 </template>
 <style>
   .my-label{
@@ -332,24 +368,29 @@
 </style>
 <script setup>
 import moment from 'moment'
-import jwt_decode from "jwt-decode"
+import jwt_decode from 'jwt-decode'
 import { useRouter } from "vue-router"
 import Modal from 'bootstrap/js/dist/modal'
-import { onMounted, ref, reactive, onBeforeMount } from 'vue';
+import { useVuelidate } from '@vuelidate/core'
 import kioskIcon from '../assets/img/kiosk.png'
 import BaseModal from '../components/BaseModal.vue';
 import Paggination from '../components/Paggination.vue'
+import { required, helpers } from '@vuelidate/validators'
 import BaseButton from '../components/Button/BaseButton.vue'
 import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
+import { onMounted, ref, reactive, onBeforeMount, computed } from 'vue';
 import TimeWithShutdown from '../components/skelton/TimeWithShutdown.vue';
+
 import Order from '../utils/Order'
 import Invoke from '../utils/Invoke';
+import Confirm from '../utils/Confirm'
 import Currency from '../utils/Currency'
 import Merchant from '../utils/Merchant'
 import AuthCheck from '../utils/AuthCheck'
 import Sweetalert from '../utils/Sweetalert'
 import HeartBeat from '../utils/HeartBeat'
+import BaseInput from '../components/input/BaseInput.vue'
 
 // GET FUNCTION
 // ##########################################################
@@ -529,6 +570,121 @@ const printQr = async (type) => {
   })
 }
 
+// QR-CODE PRINT FUNCTION
+const orderId = ref(0)
+const loginFrom = (params) => {
+  orderId.value = params.dataId
+
+  showHideModal({model: 'detail-order', type: 'close'})
+  showHideModal({model: 'confirm-modal', type: 'open'})
+}
+
+const isHidden = ref(true)
+
+const passHidden = () => {
+  isHidden.value ? isHidden.value = false : isHidden.value = true
+}
+
+const loginPayload = reactive({
+  username: '',
+  password: ''
+})
+
+const refundPayload = reactive({
+  order_id: 0,
+  description: 'Batal',
+  confirm_by: ''
+})
+
+const notSimbols = helpers.regex(/^\w+$/)
+
+const loginRules = computed(() => {
+  return {
+    username: {
+      required,
+      notSimbols: helpers.withMessage('Value cannot contain special char and spacing', notSimbols)
+    },
+    password: { required }
+  }
+})
+
+let v3$ = useVuelidate(loginRules, loginPayload)
+const message = ref(null)
+
+const loginProcess = async () => {
+  const validate = await v3$.value.$validate()
+  message.value = v3$.value
+  if (validate) {
+    showHideModal({model: 'all-modal'})
+    Sweetalert.alertLoading()
+    Confirm.withPassword(loginPayload, localStorage.getItem('user'))
+    .then((res) => {
+      const item = res.data
+			const scope = item.data.scope
+      const verifiedPersonalData = scope.some((i) => {
+        if (i.name !== "gate-ticketing-svc") {
+          return false;
+        }
+        return i.roles.some(
+          (role) => role.roles_name === "admin"
+        );
+      });
+      
+      if (verifiedPersonalData) {
+        refundPayload.confirm_by = item.data.users.username
+        refundPayload.order_id = orderId.value
+        sendConfirm()
+      } else {
+        Sweetalert.alertError('Youre not admin')
+        clearLoginPayload()
+      }
+    })
+    .catch((err) => {
+      showHideModal({modal: 'all-modal'})
+      clearLoginPayload()
+      if (err.response && err.response.status != 0) {
+        let code = err.response.status
+       if (code == 401 || code == 422) {
+        Sweetalert.alertError('Username and password not found!')
+       } else {
+        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+       }
+      } else {
+        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      }
+    })
+  }
+}
+
+
+const sendConfirm = () => {
+  Order.refundOrder(refundPayload)
+  .then((res) => {
+    Sweetalert.alertSuccess('User has been confirmed')
+		clearLoginPayload()
+  })
+  .catch((err) => {
+    if (err.response && err.response.status != 0) {
+      let code = err.response.status
+      if (code == 401 || code == 422) {
+      Sweetalert.alertError('Refund order in progress!')
+      } else {
+      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+      }
+    } else {
+      Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    }
+  })
+}
+
+const clearLoginPayload = () => {
+  loginPayload.username = ''
+  loginPayload.password = ''
+
+  v3$.value.$reset()
+}
+// ##########################################################
+
 // ANOTHER FUNCTION
 // ##########################################################
 const envConfig = reactive({
@@ -564,6 +720,7 @@ const paginate = (params) => {
 
 const qrModal = ref(null)
 const detailModal = ref(null)
+const confirmModal = ref(null)
 
 const showHideModal = (params) => {
   switch (params.model) {
@@ -585,6 +742,21 @@ const showHideModal = (params) => {
         detailModal.value.show()
       } else if (params.type === 'close')
         detailModal.value.hide()
+      break
+
+    case 'confirm-modal':
+      if (params.type === 'open') {
+      
+        confirmModal.value.show()
+      } else if (params.type === 'close')
+        confirmModal.value.hide()
+        clearLoginPayload()
+      break
+    
+    case 'all-modal':
+      qrModal.value.hide()
+      detailModal.value.hide()
+      confirmModal.value.hide()
       break
   }
 }
@@ -643,11 +815,16 @@ onMounted(() => {
     detailModal.value = new Modal('#detail-order', {
       keyboard: false
     })
+    confirmModal.value = new Modal('#confirm-modal', {
+      keyboard: false
+    })
     
     getUserName()
     getSetupConfig()
     getMerchantName()
     getOrderList()
+
+    v3$ = useVuelidate(loginRules, loginPayload)
   } catch (error) {
     clearInterval(interval)
     console.log(error);

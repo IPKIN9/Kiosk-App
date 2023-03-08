@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_MERCHANT_ID" label="Merchant ID" class="form-control-lg" placeholder="1"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_USER_URL" label="Gate User Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
     <div class="col-lg-6">
@@ -59,8 +59,9 @@ const deviceIppAddress = reactive({
   RENDERER_VITE_KIOSK_URL: '',
   RENDERER_VITE_GATE_SERVICE_URL: '',
   RENDERER_VITE_GATE_AUTH_URL: '',
+  RENDERER_VITE_GATE_USER_URL: '',
   RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL: '',
-  RENDERER_VITE_MERCHANT_ID: ''
+  RENDERER_VITE_MERCHANT_ID: 1,
 })
 
 const showEnvironment = () => {

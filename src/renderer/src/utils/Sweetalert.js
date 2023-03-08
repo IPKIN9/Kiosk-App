@@ -26,5 +26,20 @@ export default {
     cancelButtonColor: '#d33',
     confirmButtonText: options.confirmtext
     })
+  },
+
+  alertLoading () {
+    return Swal.fire({
+      title: 'Waiting',
+      text: "Processing Data!",
+      allowOutsideClick: false,
+      didOpen: () => {
+          Swal.showLoading()
+      }
+    })
+  },
+
+  alertClose () {
+    return Swal.close()
   }
 }

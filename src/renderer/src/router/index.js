@@ -27,15 +27,6 @@ const tokenGuard = (to, from, next) => {
   }
 }
 
-// const appDeployment = (to, from, next) => {
-//   const appDeploy = import.meta.env.VITE_APP_DEPLOYMENT
-//   if (appDeploy == 'web') {
-//     next('/')
-//   } else {
-//     next()
-//   }
-// }
-
 const routes = [
   {
     path: "/",

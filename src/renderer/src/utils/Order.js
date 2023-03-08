@@ -24,5 +24,8 @@ export default {
   },
   cancelOrder(id){
     return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).get(`${endPoint}/cancel/${id}`, AuthCheck.tokenConfig())
+  },
+  refundOrder (payload){
+    return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).post('/ex/v1/order/refund', payload, AuthCheck.tokenConfig())
   }
 };
