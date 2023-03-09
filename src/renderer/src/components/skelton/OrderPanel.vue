@@ -20,10 +20,6 @@
 
         <div class="tab-pane fade" :class="panelActive === 'order' ? 'show active' : ''" role="tabpanel">
           <div class="container-fluid row">
-            <div class="col-lg-12 mb-3">
-              <SelectSearch v-model="customerName" :id-input="{search: 'customerSearch', select: 'customerSelect'}" 
-              :list-of-select="customerList" :list-config-display="customerDisplay" @search-event="searchCustomer" @event-click="setCustomerPayload" />
-            </div>
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.name" label="Full Name" class="form-control-lg" :is-required="true"
                 placeholder="Input here..." />
@@ -682,8 +678,6 @@ const sendPayment = async () => {
   payPayload.total_receive = Currency.unformat(payPayload.total_receive)
   
   let validate = await v2$.value.$validate()
-  console.log(v2$.value.$errors);
-  console.log(payPayload);
   if (validate) {
     Order.pay(payPayload)
     .then((res) => {
@@ -746,7 +740,7 @@ const reloadPayInfo = (item) => {
   }
 }
 
-const disabledTotalPrice = ref(false)
+const disabledTotalPrice = ref(true)
 
 const strukInvoice = ref(null)
 const showQrSend = ref(false)

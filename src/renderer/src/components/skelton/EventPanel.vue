@@ -6,7 +6,7 @@
       </div>
       <div class="ms-3 mt-2">
         <span class="d-flex text-white fs-6 rm-padding">Event</span>
-        <span class="d-flex text-white fs-3 fw-bold rm-padding">{{ eventData.name ? eventData.name : 'Event not selected' }}</span>
+        <span class="d-flex text-white fs-3 fw-bold rm-padding "><p class="truncate">{{ eventData.name ? eventData.name : 'Event not selected' }}</p></span>
       </div>
     </div>
   </a>
@@ -53,6 +53,14 @@
     </div>
   </div>
 </template>
+<style>
+  .truncate {
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    max-width: 400px !important;
+  }
+</style>
 <script setup>
 import { onMounted, reactive, ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
