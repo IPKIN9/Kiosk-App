@@ -157,6 +157,7 @@
           </div>
           <div class="col-lg-12 mt-5 d-flex justify-content-center">
             <BaseButton @click-event="printQr(ticketList.length < 1 ? 'all' : '')" :disabled="printButton" class="btn-lg btn-primary float-end fs-3"><i class='fs-3 fas fa-print'></i> PRINT {{ ticketList.length >= 1 ? ticketList.length : 'All' }}</BaseButton>
+            <BaseButton :disabled="ticketList.length >= 1 ? false : true" class="btn-lg bg-cs-orange text-white float-start fs-3 ms-3"><i class="fa-solid fa-qrcode"></i> REACTIVATED</BaseButton>
           </div>
         </div>
       </div>
@@ -365,6 +366,11 @@
   .my-label{
     margin-bottom: -1px !important;
   }
+  
+  button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 </style>
 <script setup>
 import moment from 'moment'
@@ -478,6 +484,10 @@ const getOrderDetail = (orderId) => {
     }
   })
 }
+
+// REACTIVATED TIICKET FUNCTION
+// ##########################################################
+
 
 // QR-CODE PRINT FUNCTION
 // ##########################################################

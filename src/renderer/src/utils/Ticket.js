@@ -10,4 +10,9 @@ export default {
       `${endPoint}?page=${params.page}&limit=${params.limit}&eventarea=${params.eventarea}&status=&use=&search=${params.search}`, AuthCheck.tokenConfig()
     );
   },
+  reactivated(payload) {
+    return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL').post(
+      `${endPoint}/reactivated`, payload,AuthCheck.tokenConfig())
+    )
+  }
 };
