@@ -249,9 +249,9 @@
                   </div>
                   <div v-if="showQrSend" class="col-lg-12 mt-5">
                     <div class="d-flex justify-content-around">
-                      <!-- <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
+                      <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
                         <i class='fs-3 fas fa-print'></i>
-                      </a> -->
+                      </a>
                       <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
                         <i class='fs-3 fas fa-qrcode'></i>
                       </a>
@@ -324,7 +324,7 @@ import Merchant from "../../utils/Merchant"
 
 const titlePanel = ref("CUSTOMER FORM");
 
-const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
+const qrcode = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL');
 const emits = defineEmits(["eventTrigerr"]);
 const props = defineProps({
   eventId: Object,

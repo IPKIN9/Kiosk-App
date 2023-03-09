@@ -511,7 +511,7 @@ const addTicketList = (params) => {
   }
 }
 
-const qrcode = import.meta.env.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL;
+const qrcode = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL');
 const printButton = ref(false)
 
 const merchantName = ref('')

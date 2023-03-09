@@ -197,11 +197,15 @@
 				replaceData()
 
 				let img = document.getElementsByTagName('img')
-
+				let count = 0
+				console.log(img.length);
 				for (const key in img) {
 					img[key].onload = () => {
-						// console.log();
-						window.api.invoke("ready-print", null)
+						count ++
+
+						if (count == img.length) {
+							window.api.invoke("ready-print", null)
+						}
 					}
 				}
 
