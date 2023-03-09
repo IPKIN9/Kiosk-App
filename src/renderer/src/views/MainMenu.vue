@@ -157,7 +157,7 @@
           </div>
           <div class="col-lg-12 mt-5 d-flex justify-content-center">
             <BaseButton @click-event="printQr(ticketList.length < 1 ? 'all' : '')" :disabled="printButton" class="btn-lg btn-primary float-end fs-3"><i class='fs-3 fas fa-print'></i> PRINT {{ ticketList.length >= 1 ? ticketList.length : 'All' }}</BaseButton>
-            <BaseButton :disabled="ticketList.length >= 1 ? false : true" class="btn-lg bg-cs-orange text-white float-start fs-3 ms-3"><i class="fa-solid fa-qrcode"></i> REACTIVATED</BaseButton>
+            <BaseButton @click-event="loginFrom" type-button="reactivated" :disabled="ticketList.length >= 1 ? false : true" class="btn-lg bg-cs-orange text-white float-start fs-3 ms-3"><i class="fa-solid fa-qrcode"></i> REACTIVATED</BaseButton>
           </div>
         </div>
       </div>
@@ -261,7 +261,7 @@
                 </div>
               </div>
               <div class="row mt-5">
-                <div class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id})" class="btn btn-danger btn-lg">REFUND</button></div>
+                <div class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id, typeButton: 'refund'})" class="btn btn-danger btn-lg">REFUND</button></div>
               </div>
             </li>
           </ul>
@@ -397,6 +397,7 @@ import AuthCheck from '../utils/AuthCheck'
 import Sweetalert from '../utils/Sweetalert'
 import HeartBeat from '../utils/HeartBeat'
 import BaseInput from '../components/input/BaseInput.vue'
+import Ticket from '../utils/Ticket'
 
 // GET FUNCTION
 // ##########################################################
@@ -582,10 +583,17 @@ const printQr = async (type) => {
 
 // QR-CODE PRINT FUNCTION
 const orderId = ref(0)
-const loginFrom = (params) => {
-  orderId.value = params.dataId
+const typeConfirm = ref('')
 
-  showHideModal({model: 'detail-order', type: 'close'})
+const loginFrom = (params) => {
+  if (params.typeButton == 'refund') {
+    orderId.value = params.dataId
+    showHideModal({model: 'detail-order', type: 'close'})
+    typeConfirm.value = 'refund'
+  } else if (params.typeButton == 'reactivated'){
+    qrModal.value.hide()
+    typeConfirm.value = 'reactivated'
+  }
   showHideModal({model: 'confirm-modal', type: 'open'})
 }
 
@@ -603,6 +611,12 @@ const loginPayload = reactive({
 const refundPayload = reactive({
   order_id: 0,
   description: 'Batal',
+  confirm_by: ''
+})
+
+const reactivePayload = reactive({
+  order_ticket_id: 0,
+  description: '',
   confirm_by: ''
 })
 
@@ -641,9 +655,14 @@ const loginProcess = async () => {
       });
       
       if (verifiedPersonalData) {
-        refundPayload.confirm_by = item.data.users.username
-        refundPayload.order_id = orderId.value
-        sendConfirm()
+        if (typeConfirm.value == 'refund') {
+          refundPayload.confirm_by = item.data.users.username
+          refundPayload.order_id = orderId.value
+          sendRefund()
+        } else {
+          reactivePayload.confirm_by = item.data.users.username
+          sendReactivate()
+        }
       } else {
         Sweetalert.alertError('Youre not admin')
         clearLoginPayload()
@@ -667,7 +686,7 @@ const loginProcess = async () => {
 }
 
 
-const sendConfirm = () => {
+const sendRefund = () => {
   Order.refundOrder(refundPayload)
   .then((res) => {
     Sweetalert.alertSuccess('User has been confirmed')
@@ -685,6 +704,20 @@ const sendConfirm = () => {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
     }
   })
+}
+
+const sendReactivate = () => {
+ try {
+  for (const key in ticketList.value) {
+    reactivePayload.order_ticket_id = ticketList.value[key].id
+
+    Ticket.reactiveTicket(reactivePayload)
+  }
+  Sweetalert.alertSuccess('User has been confirmed')
+ } catch (error) {
+  console.log(error);
+ }
+
 }
 
 const clearLoginPayload = () => {
