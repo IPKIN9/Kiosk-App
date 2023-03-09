@@ -27,5 +27,8 @@ export default {
   },
   refundOrder (payload){
     return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).post('/ex/v1/order/refund', payload, AuthCheck.tokenConfig())
+  },
+  searchQr (payload){
+    return Api(AuthCheck.getLocalSetup('RENDERER_VITE_GATE_SERVICE_URL')).post('/ex/v1/order/search/qr', payload, AuthCheck.tokenConfig())
   }
 };

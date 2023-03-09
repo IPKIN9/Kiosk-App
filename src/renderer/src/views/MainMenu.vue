@@ -43,12 +43,15 @@
           <option class="fs-3" v-for="(filter, index) in filterList" :key="index" :value="filter.value">{{ filter.display }}</option>
         </select>
       </div>
-      <div class="col-lg-8">
+      <div class="col-lg-5">
         <div class="input-group input-group-merge">
           <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
           <input v-model="meta.search" @keyup="getOrderList" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
             aria-describedby="basic-addon-search31">
         </div>
+      </div>
+      <div class="col-lg-3">
+        <SearchByQr @reactivated="reactiveFromQrSearch"/>
       </div>
     </div>
   </div>
@@ -389,15 +392,16 @@ import { onMounted, ref, reactive, onBeforeMount, computed } from 'vue';
 import TimeWithShutdown from '../components/skelton/TimeWithShutdown.vue';
 
 import Order from '../utils/Order'
+import Ticket from '../utils/Ticket'
 import Invoke from '../utils/Invoke';
 import Confirm from '../utils/Confirm'
 import Currency from '../utils/Currency'
 import Merchant from '../utils/Merchant'
 import AuthCheck from '../utils/AuthCheck'
-import Sweetalert from '../utils/Sweetalert'
 import HeartBeat from '../utils/HeartBeat'
+import Sweetalert from '../utils/Sweetalert'
 import BaseInput from '../components/input/BaseInput.vue'
-import Ticket from '../utils/Ticket'
+import SearchByQr from '../components/skelton/SearchByQr.vue'
 
 // GET FUNCTION
 // ##########################################################
@@ -485,10 +489,6 @@ const getOrderDetail = (orderId) => {
     }
   })
 }
-
-// REACTIVATED TIICKET FUNCTION
-// ##########################################################
-
 
 // QR-CODE PRINT FUNCTION
 // ##########################################################
@@ -581,7 +581,16 @@ const printQr = async (type) => {
   })
 }
 
-// QR-CODE PRINT FUNCTION
+// FROM SEARCH QR
+const reactiveFromQrSearch = (orderId) => {
+  loginFrom({typeButton: 'reactivated'})
+  reactivePayload.order_ticket_id = orderId
+
+  document.getElementById('closeOfCanvasSearch').click()
+}
+// ##########################################################
+
+// REFUND & REACTIVATED FUNCTION
 const orderId = ref(0)
 const typeConfirm = ref('')
 
@@ -730,6 +739,7 @@ const clearLoginPayload = () => {
 
 // ANOTHER FUNCTION
 // ##########################################################
+
 const envConfig = reactive({
   RENDERER_VITE_KIOSK_LABEL: "",
   RENDERER_VITE_KIOSK_URL: "",
