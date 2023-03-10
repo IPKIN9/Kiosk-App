@@ -36,7 +36,7 @@
 			}
 
 			.invoice-box table td {
-				padding: 3px;
+				padding: 2px;
 				vertical-align: top;
 			}
 
@@ -121,26 +121,24 @@
 								<tr>
 									<h2 style="text-align: center; margin-bottom: 20px; text-transform: uppercase;">${data.merchant}</h2>
 								</tr>
-								<tr class="top">
+								<tr class="item">
 									<td>
-										Order Number
+										Order
 									</td>
 									<td>
 										${data.no_order}
 									</td>
 								</tr>
 
-								<tr class="item">
+								<tr class="item" style="width: 100%;">
 									<td>Kiosk Label</td>
-
 									<td>
 										${data.label}
 									</td>
 								</tr>
 
 								<tr class="item">
-									<td>Event Code</td>
-
+									<td style="width: 50%">Event Code</td>
 									<td>
 										${data.event_code}
 									</td>
@@ -148,37 +146,32 @@
 
 								<tr class="item">
 									<td>Event</td>
-
 									<td>
 										${data.event_name}
 									</td>
 								</tr>
 
-								<tr class="item last">
-									<td>Bench Area</td>
-
+								<tr class="item">
+									<td>Area</td>
 									<td>${key.bench_area}</td>
 								</tr>
 
-								<tr class="item last">
-									<td>Bench Number</td>
-
+								<tr class="item">
+									<td>Seat</td>
 									<td>
 										${key.bench_number}
 									</td>
 								</tr>
 
-								<tr class="item last">
+								<tr class="item">
 									<td>Start Date</td>
-
 									<td>
 										${data.start_date}
 									</td>
 								</tr>
 
-								<tr class="item last">
+								<tr class="item">
 									<td>End Date</td>
-
 									<td>
 										${data.end_date}
 									</td>
@@ -187,8 +180,8 @@
 							<div style="width: 100%; height: 230px; text-align: center; padding-top: 10px; padding-bottom: 20px;">
 								<img style="height: 80%; width: auto;" src="${key.qr_path}" alt="">
 							</div>
-							<div style="text-align: center;">${data.booking_code}</div>
-							<div style="text-align: center;">_</div>
+							<div style="text-align: center; font-size: 8pt; margin-top: 4px;">Do not share pictures of your ticket to anyone else.</div>
+							<div style="text-align: center;">powered by WOvi</div>
 						`
 					}
 

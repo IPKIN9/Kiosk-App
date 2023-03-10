@@ -35,6 +35,10 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  globalShortcut.register('Shift+F1', () => {
+    mainWindow.setAlwaysOnTop(false)
+  })
+
   globalShortcut.register('F12', () => {
     mainWindow.webContents.openDevTools()
   })
@@ -47,6 +51,7 @@ function createWindow() {
     app.quit()
   })
 }
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -78,7 +83,7 @@ const printStruct = (arg, callBack) => {
   const encodedData = encodeURIComponent(dataString);
   let dirname = join(__dirname, "../../resources/invoice");
   const win = new BrowserWindow({ 
-    show: false,
+    show: true,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       nodeIntegration: false,
