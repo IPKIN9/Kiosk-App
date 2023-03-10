@@ -38,10 +38,15 @@
   </div>
   <div class="container-fluid mt-4">
     <div class="row">
-      <div class="col-lg-4">
-        <select v-model="meta.status" @change="getOrderList" class="form-select form-select-lg">
-          <option class="fs-3" v-for="(filter, index) in filterList" :key="index" :value="filter.value">{{ filter.display }}</option>
-        </select>
+      <div class="col-lg-4 d-flex">
+        <div class="me-4">
+          <ReportPanel/>
+        </div>
+        <div class="flex-grow-1">
+          <select v-model="meta.status" @change="getOrderList" class="form-select form-select-lg">
+            <option class="fs-3" v-for="(filter, index) in filterList" :key="index" :value="filter.value">{{ filter.display }}</option>
+          </select>
+        </div>
       </div>
       <div class="col-lg-5">
         <div class="input-group input-group-merge">
@@ -402,6 +407,7 @@ import HeartBeat from '../utils/HeartBeat'
 import Sweetalert from '../utils/Sweetalert'
 import BaseInput from '../components/input/BaseInput.vue'
 import SearchByQr from '../components/skelton/SearchByQr.vue'
+import ReportPanel from '../components/skelton/ReportPanel.vue'
 
 // GET FUNCTION
 // ##########################################################
