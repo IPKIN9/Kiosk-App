@@ -53,6 +53,7 @@ import { useRouter } from "vue-router"
 import jwt_decode from "jwt-decode"
 import Auth from '../utils/Auth'
 import CryptoJS from 'crypto-js'
+import { decode } from 'punycode'
 
 const passType = ref(true)
 const showPassword = () => {
@@ -102,9 +103,17 @@ const fetchUserToken = () => {
     .then((res) => {
       const token = res.data.data.token;
       const decoded = jwt_decode(token);
-      const isAdmin = decoded.scope.some(
-        (item) => item.name === "gate-ticketing-svc"
-      );
+      // const isAdmin = decoded.scope.some(
+      //   (item) => item.name === "gate-ticketing-svc"
+      // );
+      const isAdmin = decoded.scope.some((item) => {
+        if (item.name !== "gate-ticketing-svc") {
+          return false;
+        }
+        return item.roles.some(
+          (role) => role.roles_name === "cashier"
+        );
+      });
       if (isAdmin) {
         localStorage.setItem("user", token)
         router.push("/");
@@ -113,6 +122,7 @@ const fetchUserToken = () => {
       }
     })
     .catch((err) => {
+      console.log(err);
       if (err.response) {
         let code = err.response.data.name
         if (code === 'UNAUTHORIZED_FAILURE') {

@@ -840,13 +840,17 @@ const goToLogin = () => {
 }
 
 onBeforeMount(() => {
-  let appEnv = import.meta.env.RENDERER_VITE_APP_ENV
-  if (AuthCheck.envTransform(appEnv) != 'local') {
+  try {
+    let appEnv = import.meta.env.RENDERER_VITE_APP_ENV
+    if (AuthCheck.envTransform(appEnv) != 'local') {
 
-    const userToken = localStorage.getItem("user")
-    if (!userToken) {
-      goToLogin()
+      const userToken = localStorage.getItem("user")
+      if (!userToken) {
+        goToLogin()
+      }
     }
+  } catch (error) {
+    console.log(error);
   }
 })
 

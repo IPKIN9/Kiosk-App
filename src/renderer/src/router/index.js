@@ -27,6 +27,39 @@ const tokenGuard = (to, from, next) => {
   }
 }
 
+const routerGuard = (to, from, next) => {
+  let appEnv = AuthCheck.envTransform(import.meta.env.RENDERER_VITE_APP_ENVIRONMENT);
+  let scope = AuthCheck.getScope();
+
+  if (scope && appEnv != "local") {
+    
+    try {
+      if (scope) {
+        const verifiedPersonalData = AuthCheck.getScope().some((item) => {
+          if (item.name !== "gate-ticketing-svc") {
+            return false;
+          }
+          return item.roles.some(
+            (role) => role.roles_name === "cashier"
+          );
+        });
+    
+        if (verifiedPersonalData) {
+          next()
+        } else {
+          localStorage.removeItem('user')
+          next('/auth/login')
+        }
+      } else {
+        localStorage.removeItem('user')
+        next('/auth/login')
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
 const routes = [
   {
     path: "/",

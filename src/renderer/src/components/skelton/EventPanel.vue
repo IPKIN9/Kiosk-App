@@ -1,5 +1,5 @@
 <template>
-  <a role="button" class="card bg-primary px-2 py-2" data-bs-toggle="offcanvas" href="#eventCanvas">
+  <a role="button" @click="actionMount" class="card bg-primary px-2 py-2" data-bs-toggle="offcanvas" href="#eventCanvas">
     <div class="d-flex">
       <div class="card btn-card bg-white rounded">
         <img :src="eventIcon" class="icon-img" alt="">
@@ -133,25 +133,11 @@ const paginate = (params) => {
 const router = useRouter()
 
 const goToLogin = () => {
-    router.push("/auth/login")
-  }
+  router.push("/auth/login")
+}
 
-onBeforeMount(() => {
-  let appEnv = import.meta.env.RENDERER_VITE_APP_ENVIRONMENT
-  if (AuthCheck.envTransform(appEnv) != 'local') {
-    const userToken = localStorage.getItem("user")
-    if (!userToken) {
-      goToLogin()
-    }
-  }
-})
-
-onMounted(() => {
-  try {
-    getEvent()
-    sendEventData({ id: 0, name: '' })
-  } catch (error) {
-    console.log(error);
-  }
-})
+const actionMount = () => {
+  getEvent()
+  sendEventData({ id: 0, name: '' })
+}
 </script>
