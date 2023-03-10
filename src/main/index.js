@@ -78,7 +78,7 @@ const printStruct = (arg, callBack) => {
   const encodedData = encodeURIComponent(dataString);
   let dirname = join(__dirname, "../../resources/invoice");
   const win = new BrowserWindow({ 
-    show: true,
+    show: false,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       nodeIntegration: false,
