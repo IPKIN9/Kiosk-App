@@ -1,5 +1,5 @@
 <template>
-  <a role="button" class="card bg-cs-orange px-2 py-2" :class="eventId && eventId.id === 0 ? 'disabled' : ''" @click="showOrderModal">
+  <a role="button" class="card px-2 py-2" :class="eventId == null || eventId.id == 0 ? 'disabled' : 'bg-cs-orange'" @click="showOrderModal">
     <div class="d-flex">
       <div class="card btn-card bg-white rounded">
         <img :src="orderIcon" class="icon-img-2" alt="" />
@@ -110,6 +110,9 @@
             <div class="row mt-3 mx-1 border border-1 rounded p-3" style="height: 65vh">
               <div v-if="ticketSelectedList.length >= 1" class="col-lg-2 text-center border-end">
                 <span class="form-label fs-5">Selected Ticket</span>
+                <div class="d-flex justify-content-center mt-2">
+                  <h6 class="text-primary">Total selected {{ticketSelectedList.length}}</h6>
+                </div>
                 <div class="mt-3">
                   <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-6">
                     {{ ticket.bench_number }}
@@ -276,7 +279,7 @@
   pointer-events: none;
   cursor: default;
   text-decoration: none;
-  background-color: #b2b2b2 !important;
+  background: #b2b2b2 !important;
 }
 
 .non-shadow {
@@ -982,6 +985,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  console.log(props.eventId);
   try {
     orderModal.value = new Modal('#orderedModal', {
       keyboard: false

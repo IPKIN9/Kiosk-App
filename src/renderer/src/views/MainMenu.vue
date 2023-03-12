@@ -776,7 +776,7 @@ const getSetupConfig = () => {
   }
 }
 
-const eventId = ref()
+const eventId = ref(null)
 
 const getEventId = (params) => {
   eventId.value = params
@@ -869,7 +869,7 @@ onBeforeMount(() => {
       }
     }
   } catch {
-    
+
   }
 })
 
