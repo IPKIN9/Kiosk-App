@@ -18,32 +18,31 @@
     </div>
   </div>
   <div class="row mt-2">
-    <div class="col-lg-6">
+    <!-- <div class="col-lg-6">
       <div class="mb-3">
         <BaseInput v-model="deviceIppAddress.RENDERER_VITE_KIOSK_URL" label="Kiosk Device Address" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+      </div>
+    </div> -->
+    <div class="col-lg-6">
+      <div class="mb-3">
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_SERVICE_URL" label="Gate Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_SERVICE_URL" label="Gate Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_AUTH_URL" label="Kiosk Auth Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
   </div>
   <div class="row mt-2">
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GATE_AUTH_URL" label="Kiosk Auth Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="mb-3">
         <BaseInput v-model="deviceIppAddress.RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL" label="Google Cloud Service Url" class="form-control-lg" placeholder="http://127.0.0.1:3000"/>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-lg-9"></div>
-    <BaseButton @click-event="saveNewEnvironment" class="btn-primary btn-lg mt-4 fs-2 col-lg-3"> <i class="fa-solid fa-floppy-disk fs-4 me-2"></i>Save Change</BaseButton>
+    <div class="col-lg-6">
+      <BaseButton @click-event="saveNewEnvironment" class="btn-primary btn-lg mt-4 fs-2"> <i class="fa-solid fa-floppy-disk fs-4 me-2"></i>Save Change</BaseButton>
+    </div>
   </div>
 </template>
 <script setup>

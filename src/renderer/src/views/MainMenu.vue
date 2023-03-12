@@ -14,7 +14,15 @@
             </div>
             <span @click="goToSetting"><i class="fs-3 fa-solid fa-gear"></i></span>
           </div>
-          <div class="d-flex" style="margin-bottom: -2px !important;">
+          <div class="d-flex small">
+            <div class="col-lg-3">Kios Label</div>
+            <div class="col-lg">: {{ envConfig.RENDERER_VITE_KIOSK_LABEL }}</div>
+          </div>
+          <div class="d-flex small" style="margin-top: -3px;">
+            <div class="col-lg-3">Operator</div>
+            <div class="col-lg">: {{ userName }}</div>
+          </div>
+          <!-- <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">kios label</small>
             <small class="fw-bold ms-2 text-uppercase">{{ envConfig.RENDERER_VITE_KIOSK_LABEL }}</small>
           </div>
@@ -25,7 +33,7 @@
           <div class="d-flex">
             <small class="text-uppercase">ip address</small>
             <small class="fw-bold ms-2 text-uppercase">{{ envConfig.RENDERER_VITE_KIOSK_URL }}</small>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="col-lg-5">
@@ -591,6 +599,7 @@ const printQr = async (type) => {
 const reactiveFromQrSearch = (orderId) => {
   loginFrom({typeButton: 'reactivated'})
   reactivePayload.order_ticket_id = orderId
+  
 
   document.getElementById('closeOfCanvasSearch').click()
 }
@@ -674,7 +683,7 @@ const loginProcess = async () => {
           refundPayload.confirm_by = item.data.users.username
           refundPayload.order_id = orderId.value
           sendRefund()
-        } else {
+        } else if (typeConfirm.value == 'reactivated') {
           reactivePayload.confirm_by = item.data.users.username
           sendReactivate()
         }
@@ -723,10 +732,12 @@ const sendRefund = () => {
 
 const sendReactivate = () => {
  try {
+  console.log(reactivePayload);
+  console.log(ticketList.value);
   for (const key in ticketList.value) {
     reactivePayload.order_ticket_id = ticketList.value[key].id
 
-    Ticket.reactiveTicket(reactivePayload)
+    // Ticket.reactiveTicket(reactivePayload).then((res) => {console.log(res.data);})
   }
   Sweetalert.alertSuccess('User has been confirmed')
  } catch (error) {

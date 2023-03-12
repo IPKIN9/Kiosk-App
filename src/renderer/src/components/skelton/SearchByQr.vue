@@ -4,7 +4,7 @@
   <div class="offcanvas offcanvas-end" tabindex="-1" id="searchByQr" aria-labelledby="searchByQrLabel">
     <div class="offcanvas-header">
       <h4 class="offcanvas-title fw-bold" id="offcanvasWithBothOptionsLabel">SEARCH BY QR CODE</h4>
-      <BaseButton id="closeOfCanvasSearch" @click-event="clearQrList" type-button="clear-search" class="btn-icon btn-cs-close" data-bs-dismiss="offcanvas" aria-label="Close">
+      <BaseButton id="closeOfCanvasSearch" type-button="clear-search" class="btn-icon btn-cs-close" data-bs-dismiss="offcanvas" aria-label="Close">
         <i class="fs-1 fa-solid fa-xmark"></i>
       </BaseButton>
     </div>
@@ -93,7 +93,6 @@
       }
 
       qrCodeList.length = 1
-      console.log(qrCodeList);
     })
     .catch((err) => {
       clearQrList()
@@ -120,9 +119,9 @@
       }
     }
 
-    if (params.typeButton == 'clear-search') {
-      qrCodePayload.qr_value = ''
-    }
+    // if (params.typeButton == 'clear-search') {
+    //   qrCodePayload.qr_value = ''
+    // }
   }
 
   const reactivTicket = () => {
