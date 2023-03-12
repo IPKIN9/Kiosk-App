@@ -343,8 +343,8 @@
 
   <BaseModal @click-event="showHideModal({model: 'confirm-modal', type:'close'})" label="" sizing="" modal-id="confirm-modal">
     <template v-slot:body>
-      <div class="px-4" style="margin-top: -65px !important;">
-        <h3 class="text-center" >Confirmation</h3>
+      <div class="px-4">
+        <h3 class="text-center" style="position: relative; top: -65px; margin-bottom: -65px;">Confirmation</h3>
         <div class="form-group mt-5">
           <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" />
           <div v-if="message != null">
@@ -599,7 +599,6 @@ const printQr = async (type) => {
 const reactiveFromQrSearch = (orderId) => {
   loginFrom({typeButton: 'reactivated'})
   reactivePayload.order_ticket_id = orderId
-  
 
   document.getElementById('closeOfCanvasSearch').click()
 }
@@ -674,7 +673,7 @@ const loginProcess = async () => {
           return false;
         }
         return i.roles.some(
-          (role) => role.roles_name === "admin"
+          (role) => role.roles_name === "admin" || role.roles_name === "staff" || role.roles_name === "cashier"
         );
       });
       
@@ -688,11 +687,14 @@ const loginProcess = async () => {
           sendReactivate()
         }
       } else {
-        Sweetalert.alertError('Youre not admin')
+        Sweetalert.alertError('You not have current roles')
         clearLoginPayload()
       }
+
+      isHidden.value = true
     })
     .catch((err) => {
+      isHidden.value = true
       showHideModal({modal: 'all-modal'})
       clearLoginPayload()
       if (err.response && err.response.status != 0) {
@@ -732,16 +734,21 @@ const sendRefund = () => {
 
 const sendReactivate = () => {
  try {
-  console.log(reactivePayload);
-  console.log(ticketList.value);
-  for (const key in ticketList.value) {
-    reactivePayload.order_ticket_id = ticketList.value[key].id
+  if (ticketList.value.length >= 1) {
+    for (const key in ticketList.value) {
+      reactivePayload.order_ticket_id = ticketList.value[key].id
 
-    // Ticket.reactiveTicket(reactivePayload).then((res) => {console.log(res.data);})
+      Ticket.reactiveTicket(reactivePayload).then((res) => {
+      })
+    }
+    Sweetalert.alertSuccess('User has been confirmed')
+  } else {
+    Ticket.reactiveTicket(reactivePayload).then((res) => {
+      Sweetalert.alertSuccess(res.data.message)
+    })
   }
-  Sweetalert.alertSuccess('User has been confirmed')
- } catch (error) {
-  console.log(error);
+ } catch {
+
  }
 
 }
@@ -820,6 +827,7 @@ const showHideModal = (params) => {
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()
+        ticketList.value = []
         clearLoginPayload()
       break
     
@@ -860,8 +868,8 @@ onBeforeMount(() => {
         goToLogin()
       }
     }
-  } catch (error) {
-    console.log(error);
+  } catch {
+    
   }
 })
 
@@ -901,7 +909,6 @@ onMounted(() => {
     v3$ = useVuelidate(loginRules, loginPayload)
   } catch (error) {
     clearInterval(interval)
-    console.log(error);
   }
 })
 </script>

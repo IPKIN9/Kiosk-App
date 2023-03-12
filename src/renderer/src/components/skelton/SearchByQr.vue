@@ -1,18 +1,18 @@
 <template>
-  <BaseButton class="bg-secondary text-white fs-4" style="width: 100% !important;" type="button" data-bs-toggle="offcanvas" data-bs-target="#searchByQr" aria-controls="searchByQr"><i class="fa-solid fa-qrcode me-3"></i><span>Search By <b>QR</b></span></BaseButton>
+  <BaseButton @click-event="autFocus" class="bg-secondary text-white fs-4" style="width: 100% !important;" type="button" data-bs-toggle="offcanvas" data-bs-target="#searchByQr" aria-controls="searchByQr"><i class="fa-solid fa-qrcode me-3"></i><span>Search By <b>QR</b></span></BaseButton>
 
   <div class="offcanvas offcanvas-end" tabindex="-1" id="searchByQr" aria-labelledby="searchByQrLabel">
     <div class="offcanvas-header">
       <h4 class="offcanvas-title fw-bold" id="offcanvasWithBothOptionsLabel">SEARCH BY QR CODE</h4>
-      <BaseButton id="closeOfCanvasSearch" type-button="clear-search" class="btn-icon btn-cs-close" data-bs-dismiss="offcanvas" aria-label="Close">
+      <BaseButton @click-event="clearQrList" id="closeOfCanvasSearch" type-button="clear-search" class="btn-icon btn-cs-close" data-bs-dismiss="offcanvas" aria-label="Close">
         <i class="fs-1 fa-solid fa-xmark"></i>
       </BaseButton>
     </div>
     <div class="offcanvas-body">
       <div class="input-group input-group-merge">
-        <span class="input-group-text" id="basic-addon-search31"><i class="fa-solid fa-qrcode"></i></span>
+        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
         <input v-model="qrCodePayload.qr_value" type="text" class="form-control form-control-lg" placeholder="Search by qr..." aria-label="Search..."
-          aria-describedby="basic-addon-search31">
+          id="auto-focus-search">
       </div>
       <ul v-show="qrCodeList.length >= 1" class="mt-4 list-group">
         <li class="list-group item">
@@ -48,6 +48,11 @@
           </div>
         </li>
       </ul>
+      <ul v-show="qrCodeList.length < 1" class="list-group mt-5">
+        <li class="list-group text-center">
+          No ticket found
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -60,6 +65,10 @@
   const emits = defineEmits(['printQr', 'reactivated'])
 
   const qrPath = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL')
+
+  const autFocus = () => {
+    document.getElementById('auto-focus-search').focus()
+  }
 
   const qrCodeList = reactive({
     id: 0,
@@ -94,10 +103,6 @@
 
       qrCodeList.length = 1
     })
-    .catch((err) => {
-      clearQrList()
-      console.log(err);
-    })
   }
 
   watch(qrCodePayload, (newQr) => {
@@ -107,6 +112,7 @@
   })
 
   const clearQrList = (params) => {
+    qrCodePayload.qr_value = ''
     for (const key in qrCodeList) {
       if (typeof qrCodeList[key] == 'string') {
         qrCodeList[key] = ''
