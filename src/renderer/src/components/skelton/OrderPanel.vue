@@ -1,5 +1,5 @@
 <template>
-  <a role="button" class="card px-2 py-2" :class="eventId == null || eventId.id == 0 ? 'disabled' : 'bg-cs-orange'" @click="showOrderModal">
+  <a role="button" class="card px-2 py-2" :class="eventId == null || eventId.id == 0 ? 'disabled' : 'bg-cs-orange'" @click="showOrderModal({type: 'new'})">
     <div class="d-flex">
       <div class="card btn-card bg-white rounded">
         <img :src="orderIcon" class="icon-img-2" alt="" />
@@ -7,7 +7,7 @@
       <div class="ms-3 mt-2">
         <span class="d-flex text-white fs-6 rm-padding">Order</span>
         <span class="d-flex text-white fs-3 fw-bold rm-padding">{{
-          eventId && eventId.id === 0 ? "No Event" : "Create Order"
+          eventId == null || eventId.id === 0 ? "No Event" : "Create Order"
         }}</span>
       </div>
     </div>
@@ -94,7 +94,7 @@
                   label="Select Area" />
               </div>
               <div class="col-lg-2">
-                <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketList.length >= 1 ? false : true" class="form-select form-control-lg">
+                <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-select form-control-lg">
                   <option class="fs-3 my-1" value="120">Show of 120</option>
                   <option class="fs-3 my-1" value="240">Show of 240</option>
                   <option class="fs-3 my-1" value="480">Show of 480</option>
@@ -103,7 +103,7 @@
               <div class="col-lg-6">
                 <div class="input-group input-group-merge">
                   <span class="input-group-text"><i class="bx bx-search"></i></span>
-                  <input @keyup="getTicketList()" v-model="ticketParams.search" type="text" :readonly="ticketList.length >= 1 ? false : true" class="form-control form-control-lg" placeholder="Search..." />
+                  <input @keyup="getTicketList('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
                 </div>
               </div>
             </div>
@@ -475,6 +475,7 @@ const ticketParams = reactive({
 });
 
 const ticketShowUp = () => {
+  console.log(`Area: ${ticketList.value.length}`);
   panelActive.value = "ticket";
   titlePanel.value = 'CUSTOMER FORM / TICKET'
   getAreaList();
@@ -518,7 +519,11 @@ const disabledSelectedTicket = () => {
   ticketList.value.splice(0, ticketList.value.length);
 }
 
-const getTicketList = () => {
+const getTicketList = (params) => {
+  if (params == 'search') {
+    ticketParams.page = 1
+    ticketList.value = []
+  }
   Ticket.getList(ticketParams)
   .then((res) => {
 
@@ -548,8 +553,11 @@ const getTicketList = () => {
 const paginateTicket = (params) => {
   disabledSelectedTicket()
   ticketParams.page = params
-  getTicketList()
-
+  if (ticketParams.search.length >= 1) {
+    getTicketList('search')
+  } else {
+    getTicketList()
+  }
 }
 
 const ticketSelectedList = ref([])
@@ -790,6 +798,11 @@ const showHideOrder = () => {
   orderModal.value.show() ? orderModal.value.show() : orderModal.value.hide()
 }
 const showOrderModal = (params) => {
+  if (params && params.type == 'new') {
+    getMerchantName()
+    getPaymentList()
+  }
+
   if (payInfo.status === 'unpaid' || payInfo.status === 'progress') {
     showHideOrder()
     Sweetalert.alertConfirm({
@@ -990,9 +1003,6 @@ onMounted(() => {
     orderModal.value = new Modal('#orderedModal', {
       keyboard: false
     })
-    
-    getMerchantName()
-    getPaymentList()
   } catch (error) {
     console.log(error);
   }

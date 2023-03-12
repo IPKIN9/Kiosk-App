@@ -1,14 +1,14 @@
 <template>
   <div :id="idInput.search" class="input-group input-group-merge">
     <span class="input-group-text"><i class="bx bx-search"></i></span>
-    <input @click="getSearchWidth" @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"
+    <input @keyup="getSearchWidth" @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"
     type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search...">
   </div>
   <div style="position: absolute;
     z-index: 100;" v-show="selectShow" :id="idInput.select" class="mt-2">
     <select class="form-select" size="3">
       <option @click="sendEmits({ display: list[listConfigDisplay.display], value: list[listConfigDisplay.value] })"
-        v-for="(list, index) in listSearch" :key="index" class="fs-3" :value="list[listConfigDisplay.value]">{{
+        v-for="(list, index) in listSearch" :key="index" class="fs-3 text-capitalize" :value="list[listConfigDisplay.value]">{{
           list[listConfigDisplay.display]
         }}</option>
     </select>
