@@ -35,6 +35,9 @@
               <div class="mb-3">
                 <BaseButton @click-event="submitData" class="btn-primary d-grid w-100">Sign in</BaseButton>
               </div>
+              <div class="mb-3">
+                <BaseButton @click-event="powerOff" class="btn-danger d-grid w-100">Shutdown</BaseButton>
+              </div>
             </form>
           </div>
         </div>
@@ -54,6 +57,7 @@ import jwt_decode from "jwt-decode"
 import Auth from '../utils/Auth'
 import CryptoJS from 'crypto-js'
 import { decode } from 'punycode'
+import Invoke from '../utils/Invoke'
 
 const passType = ref(true)
 const showPassword = () => {
@@ -151,6 +155,19 @@ const submitData = () => {
 
 const goToSetting = () => {
   router.replace('/setting')
+}
+
+const powerOff = () => {
+  Sweetalert.alertConfirm({
+    title: 'Shutting Down',
+    confirmtext: 'Power Off'
+  })
+  .then((res) => {
+    if (res.isConfirmed) {
+      localStorage.removeItem('user')
+      Invoke.shutdownFunction()
+    }
+  })
 }
 
 onMounted(() => {
