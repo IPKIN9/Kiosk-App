@@ -20,8 +20,8 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    mainWindow.setFullScreen(false)
-    mainWindow.setAlwaysOnTop(false)
+    mainWindow.setFullScreen(true)
+    mainWindow.setAlwaysOnTop(true)
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -39,9 +39,9 @@ function createWindow() {
     mainWindow.setAlwaysOnTop(false)
   })
 
-  globalShortcut.register('F12', () => {
-    mainWindow.webContents.openDevTools()
-  })
+  // globalShortcut.register('F12', () => {
+  //   mainWindow.webContents.openDevTools()
+  // })
 
   globalShortcut.register('CommandOrControl+Shift+X', () => {
     const windows = BrowserWindow.getAllWindows()

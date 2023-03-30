@@ -32,9 +32,12 @@
 </template>
 <script setup>
 import Sweetalert from '../../utils/Sweetalert'
+import AuthCheck from '../../utils/AuthCheck'
 import Invoke from '../../utils/Invoke'
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
+import Auth from '../../utils/Auth'
+import jwt_decode from 'jwt-decode'
 import moment from 'moment'
 
 const router = useRouter()
@@ -53,9 +56,28 @@ const logOut = () => {
   })
   .then((res) => {
     if (res.isConfirmed) {
+      logoutFunc()
+    }
+  })
+}
+
+const logoutFunc = async () => {
+  const logoutPayload = {
+    username: ''
+  }
+
+  const token = localStorage.getItem('user')
+  const decoded = jwt_decode(token);
+  
+  logoutPayload.username = await decoded.name
+
+  Auth.logout(logoutPayload)
+  .then((res) => {
       localStorage.removeItem('user')
       router.replace('/auth/login')
-    }
+  }).catch((err) => {
+    Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+    console.log(err);
   })
 }
 
