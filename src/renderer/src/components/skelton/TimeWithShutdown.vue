@@ -56,6 +56,7 @@ const logOut = () => {
   })
   .then((res) => {
     if (res.isConfirmed) {
+      Sweetalert.alertLoading()
       logoutFunc()
     }
   })
@@ -69,15 +70,17 @@ const logoutFunc = async () => {
   const token = localStorage.getItem('user')
   const decoded = jwt_decode(token);
   
-  logoutPayload.username = await decoded.name
+  logoutPayload.username = await decoded.username.toLowerCase()
 
   Auth.logout(logoutPayload)
   .then((res) => {
       localStorage.removeItem('user')
       router.replace('/auth/login')
+      Sweetalert.alertSuccess('You are logout')
   }).catch((err) => {
     Sweetalert.alertError(AuthCheck.defaultErrorResponse())
     console.log(err);
+    console.log(logoutPayload.username);
   })
 }
 

@@ -56,8 +56,24 @@ import { useRouter } from "vue-router"
 import jwt_decode from "jwt-decode"
 import Auth from '../utils/Auth'
 import CryptoJS from 'crypto-js'
-import { decode } from 'punycode'
 import Invoke from '../utils/Invoke'
+
+const userCount = ref(false)
+
+const userControl = () => {
+  Auth.loginControl()
+  .then((res) => {
+    let item = res.data
+    if (item.data.online_with_roles < 3) {
+      userCount.value = true
+    } else {
+      userCount.value = false
+    }
+  })
+  .catch((err) => {
+
+  })
+}
 
 const passType = ref(true)
 const showPassword = () => {
@@ -97,50 +113,55 @@ const fetchGrantToken = () => {
 }
 
 const fetchUserToken = () => {
-  let tokenEncrypt = localStorage.getItem("token")
-  let tokenDecrypt = CryptoJS.AES.decrypt(
-    tokenEncrypt,
-    import.meta.env.RENDERER_VITE_ENCRYPT_KEY
-  ).toString(CryptoJS.enc.Utf8)
+ userControl()
+  if (userCount.value) {
+    let tokenEncrypt = localStorage.getItem("token")
+    let tokenDecrypt = CryptoJS.AES.decrypt(
+      tokenEncrypt,
+      import.meta.env.RENDERER_VITE_ENCRYPT_KEY
+    ).toString(CryptoJS.enc.Utf8)
 
-  Auth.getUserToken(dataPayload, tokenDecrypt)
-    .then((res) => {
-      const token = res.data.data.token;
-      const decoded = jwt_decode(token);
-      // const isAdmin = decoded.scope.some(
-      //   (item) => item.name === "gate-ticketing-svc"
-      // );
-      const isAdmin = decoded.scope.some((item) => {
-        if (item.name !== "gate-ticketing-svc") {
-          return false;
-        }
-        return item.roles.some(
-          (role) => role.roles_name === "cashier"
-        );
-      });
-      if (isAdmin) {
-        localStorage.setItem("user", token)
-        router.push("/");
-      } else {
-        Sweetalert.alertError('Username or password not valid')
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      if (err.response) {
-        let code = err.response.data.name
-        if (code === 'UNAUTHORIZED_FAILURE') {
-          fetchGrantToken()
-        } else if(err.response.status == '401') {
-          loginError.value = true
+    Auth.getUserToken(dataPayload, tokenDecrypt)
+      .then((res) => {
+        const token = res.data.data.token;
+        const decoded = jwt_decode(token);
+        // const isAdmin = decoded.scope.some(
+        //   (item) => item.name === "gate-ticketing-svc"
+        // );
+        const isAdmin = decoded.scope.some((item) => {
+          if (item.name !== "gate-ticketing-svc") {
+            return false;
+          }
+          return item.roles.some(
+            (role) => role.roles_name === "cashier"
+          );
+        });
+        if (isAdmin) {
+          localStorage.setItem("user", token)
+          router.push("/");
         } else {
-          let msg = AuthCheck.errorResponse(err.response.status)
-          Sweetalert.alertError(msg)
+          Sweetalert.alertError('Username or password not valid')
         }
-			} else {
-				Sweetalert.alertError(AuthCheck.defaultErrorResponse())
-			}
-    })
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response) {
+          let code = err.response.data.name
+          if (code === 'UNAUTHORIZED_FAILURE') {
+            fetchGrantToken()
+          } else if(err.response.status == '401') {
+            loginError.value = true
+          } else {
+            let msg = AuthCheck.errorResponse(err.response.status)
+            Sweetalert.alertError(msg)
+          }
+        } else {
+          Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        }
+      })
+  } else {
+    Sweetalert.alertError('User login is full') 
+  }
 }
 
 const submitData = () => {
