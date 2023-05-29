@@ -39,13 +39,13 @@ function createWindow() {
     mainWindow.setAlwaysOnTop(false)
   })
 
-  // globalShortcut.register('F12', () => {
-  //   mainWindow.webContents.openDevTools()
-  // })
+  globalShortcut.register('F12', () => {
+    mainWindow.webContents.openDevTools()
+  })
 
   globalShortcut.register('CommandOrControl+Shift+X', () => {
     const windows = BrowserWindow.getAllWindows()
-    windows.forEach(win => {
+    windows.forEach((win) => {
       win.close()
     })
     app.quit()
@@ -68,30 +68,30 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   const windows = BrowserWindow.getAllWindows()
-  windows.forEach(win => {
+  windows.forEach((win) => {
     win.close()
   })
   app.quit()
 })
 
-// app.disableHardwareAcceleration()
+app.disableHardwareAcceleration()
 
 let content = null
 
 const printStruct = (arg, callBack) => {
-  const dataString = JSON.stringify(arg);
-  const encodedData = encodeURIComponent(dataString);
-  let dirname = join(__dirname, "../../resources/invoice");
-  const win = new BrowserWindow({ 
+  const dataString = JSON.stringify(arg)
+  const encodedData = encodeURIComponent(dataString)
+  let dirname = join(__dirname, '../../resources/invoice')
+  const win = new BrowserWindow({
     show: false,
     webPreferences: {
-      preload: join(__dirname, "../preload/index.js"),
+      preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
       contextIsolation: true
-    },
-   });
+    }
+  })
 
-  win.loadURL(`file://${dirname}/${arg.path_file}?data=${encodedData}`);
+  win.loadURL(`file://${dirname}/${arg.path_file}?data=${encodedData}`)
   win.webContents.openDevTools()
   content = win
 }
@@ -100,45 +100,40 @@ ipcMain.handle('ready-print', (event, data) => {
   const options = {
     silent: true,
     margins: {
-      marginType: "none",
+      marginType: 'none'
     },
     scaleFactor: 85,
     printBackground: false,
-    deviceName: "POS-80C",
+    deviceName: 'POS-80C'
   }
-  
+
   content.webContents.print(options, (success, errorType) => {
     if (success) {
       content.close()
     } else {
-      console.log(errorType);
+      console.log(errorType)
     }
   })
 })
 
-ipcMain.handle("printStruct", async (event, arg) => {
-  console.log("Received message from renderer:", arg);
-  const sendFeedBack = () => {
-  }
+ipcMain.handle('printStruct', async (event, arg) => {
+  console.log('Received message from renderer:', arg)
+  const sendFeedBack = () => {}
 
   printStruct(arg, sendFeedBack)
-});
-
-// ipcMain.handle("flushLocalStorage", async () => {
-  
-// })
+})
 
 ipcMain.handle('shutdown', async (event) => {
   const windows = BrowserWindow.getAllWindows()
-  windows.forEach(win => {
+  windows.forEach((win) => {
     win.close()
   })
 
   exec('shutdown /s /t 0', (error) => {
     if (error) {
-      console.error(`exec error: ${error}`);
-      return;
+      console.error(`exec error: ${error}`)
+      return
     }
-    app.quit();
-  });
-});
+    app.quit()
+  })
+})

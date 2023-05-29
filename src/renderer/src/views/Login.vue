@@ -65,9 +65,9 @@ const userControl = () => {
   .then((res) => {
     let item = res.data
     if (item.data.online_with_roles < 3) {
-      userCount.value = true
-    } else {
       userCount.value = false
+    } else {
+      userCount.value = true
     }
   })
   .catch((err) => {
@@ -114,7 +114,7 @@ const fetchGrantToken = () => {
 
 const fetchUserToken = () => {
  userControl()
-  if (userCount.value) {
+  if (!userCount.value) {
     let tokenEncrypt = localStorage.getItem("token")
     let tokenDecrypt = CryptoJS.AES.decrypt(
       tokenEncrypt,
@@ -133,7 +133,7 @@ const fetchUserToken = () => {
             return false;
           }
           return item.roles.some(
-            (role) => role.roles_name === "cashier"
+            (role) => role.roles_name === "staff"
           );
         });
         if (isAdmin) {
@@ -144,7 +144,6 @@ const fetchUserToken = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
         if (err.response) {
           let code = err.response.data.name
           if (code === 'UNAUTHORIZED_FAILURE') {
