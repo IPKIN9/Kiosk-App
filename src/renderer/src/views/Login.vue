@@ -133,7 +133,7 @@ const fetchUserToken = () => {
             return false;
           }
           return item.roles.some(
-            (role) => role.roles_name === "staff"
+            (role) => role.roles_name === "cashier"
           );
         });
         if (isAdmin) {
