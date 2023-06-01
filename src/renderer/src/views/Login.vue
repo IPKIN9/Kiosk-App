@@ -57,6 +57,7 @@ import jwt_decode from "jwt-decode"
 import Auth from '../utils/Auth'
 import CryptoJS from 'crypto-js'
 import Invoke from '../utils/Invoke'
+import ErrorLogs from '../utils/ErrorLogs'
 
 const userCount = ref(false)
 
@@ -71,7 +72,8 @@ const userControl = () => {
     }
   })
   .catch((err) => {
-
+    ErrorLogs.writeToLog(`USERCONTROL - ${err.message}`)
+    console.log(err);
   })
 }
 
@@ -106,9 +108,12 @@ const fetchGrantToken = () => {
       if (err.response) {
 				let msg = AuthCheck.errorResponse(err.response.status)
 				Sweetalert.alertError(msg)
+        ErrorLogs.writeToLog(`${err.response.status} | GRANT - ${err.response.data.message}`)
 			} else {
 				Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
 			}
+      console.log(err);
     })
 }
 
@@ -154,9 +159,12 @@ const fetchUserToken = () => {
             let msg = AuthCheck.errorResponse(err.response.status)
             Sweetalert.alertError(msg)
           }
+          ErrorLogs.writeToLog(`${err.response.status} | LOGIN - ${err.response.data.message}`)
         } else {
           Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+          ErrorLogs.writeToLog(err.message)
         }
+        console.log(err);
       })
   } else {
     Sweetalert.alertError('User login is full') 

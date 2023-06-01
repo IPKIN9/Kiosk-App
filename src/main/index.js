@@ -3,6 +3,8 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { exec } from 'child_process'
 import { join } from 'path'
+import fs from 'fs';
+import moment from 'moment'
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -137,3 +139,13 @@ ipcMain.handle('shutdown', async (event) => {
     app.quit()
   })
 })
+
+ipcMain.handle('writeToLog', async (event, message) => {
+  const logMessage = `${moment().format('DD/MM/YYYY HH:mm:ss')}: ${message}\n`;
+
+  fs.appendFile('app.log', logMessage, (err) => {
+    if (err) {
+      console.error('Gagal menulis ke file log:', err);
+    }
+  });
+});

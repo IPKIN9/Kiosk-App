@@ -410,6 +410,7 @@ import Invoke from '../utils/Invoke';
 import Confirm from '../utils/Confirm'
 import Currency from '../utils/Currency'
 import Merchant from '../utils/Merchant'
+import ErrorLogs from '../utils/ErrorLogs'
 import AuthCheck from '../utils/AuthCheck'
 import HeartBeat from '../utils/HeartBeat'
 import Sweetalert from '../utils/Sweetalert'
@@ -442,8 +443,10 @@ const getOrderList = () => {
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        ErrorLogs.writeToLog(`${err.response.status} | GetOrderList - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     })
 }
@@ -498,8 +501,10 @@ const getOrderDetail = (orderId) => {
     if (err.response && err.response.status != 0) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetOrderDetail - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -542,8 +547,10 @@ const getMerchantName = () => {
     if (err.response && err.response.status != 0) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetMerchantName - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -699,13 +706,15 @@ const loginProcess = async () => {
       clearLoginPayload()
       if (err.response && err.response.status != 0) {
         let code = err.response.status
-       if (code == 401 || code == 422) {
-        Sweetalert.alertError('Username and password not found!')
-       } else {
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
-       }
+        if (code == 401 || code == 422) {
+          Sweetalert.alertError('Username and password not found!')
+        } else {
+          Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        }
+        ErrorLogs.writeToLog(`${err.response.status} | LoginProcessOnMainMenu - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     })
   }
@@ -726,8 +735,10 @@ const sendRefund = () => {
       } else {
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
       }
+      ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -748,7 +759,7 @@ const sendReactivate = () => {
     })
   }
  } catch {
-
+  ErrorLogs('Send Reactive Error on MainMenu.vue')
  }
 
 }
@@ -869,7 +880,7 @@ onBeforeMount(() => {
       }
     }
   } catch {
-
+    ErrorLogs.writeToLog('onBeforeMount function error on MainMenu.vue')
   }
 })
 
@@ -909,6 +920,7 @@ onMounted(() => {
     v3$ = useVuelidate(loginRules, loginPayload)
   } catch (error) {
     clearInterval(interval)
+    ErrorLogs.writeToLog(`On mounted MainMenu.vue: ${error}`)
   }
 })
 </script>

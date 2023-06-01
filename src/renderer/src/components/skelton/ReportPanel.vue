@@ -52,6 +52,7 @@ import Other from '../../utils/Other'
 import Event from '../../utils/Event'
 import moment from 'moment'
 import Sweetalert from '../../utils/Sweetalert';
+import ErrorLogs from '../../utils/ErrorLogs';
 
 
 const reportParams = reactive({
@@ -108,7 +109,11 @@ const getEventList = () => {
       eventList.value = item.data
     })
     .catch((err) => {
-      console.log(err);
+      if (err.response) {
+        ErrorLogs.writeToLog(`${err.response.status} | GetEventList on ReportPanel.vue - ${err.response.data.message}`)
+      } else {
+        ErrorLogs.writeToLog(err.message)
+      }
     })
   } else {
     eventList.value = []
@@ -164,7 +169,11 @@ const sendReport = async () => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      if (err.response) {
+        ErrorLogs.writeToLog(`${err.response.status} | SendReport on ReportPanel.vue - ${err.response.data.message}`)
+      } else {
+        ErrorLogs.writeToLog(err.message)
+      }
       showHideReport()
       clearReport()
     })

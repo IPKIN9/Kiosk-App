@@ -320,6 +320,7 @@ import Ticket from "../../utils/Ticket";
 import Order from "../../utils/Order"
 import Other from "../../utils/Other"
 import Merchant from "../../utils/Merchant"
+import ErrorLogs from '../../utils/ErrorLogs';
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -348,8 +349,10 @@ const getCustomerList = () => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetCostumerList on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -455,8 +458,10 @@ const orderProccess = async () => {
       if (err.response) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        ErrorLogs.writeToLog(`${err.response.status} | OrderUpsert on OrderPanel.vue - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     })
   }
@@ -499,8 +504,10 @@ const getAreaList = () => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetAreaList on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   });
 };
@@ -544,8 +551,10 @@ const getTicketList = (params) => {
       if (err.response) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        ErrorLogs.writeToLog(`${err.response.status} | GetTicketList on OrderPanel.vue - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     });
 };
@@ -648,8 +657,10 @@ const getPaymentList = () => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetPaymentList on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -705,8 +716,10 @@ const sendPayment = async () => {
       if (err.response) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        ErrorLogs.writeToLog(`${err.response.status} | SendPayment on OrderPanel.vue - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     })
   }
@@ -736,8 +749,10 @@ const validatePayment = (orderId) => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | ValidatePayment on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -777,8 +792,10 @@ const getOrderDetail = (orderId) => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetOrderDetail on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -830,8 +847,10 @@ const cancelOrdered = () => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | CancelOrder on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -848,8 +867,10 @@ const getMerchantName = () => {
     if (err.response) {
       let code = err.response.status
       Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+      ErrorLogs.writeToLog(`${err.response.status} | GetMerchantName on OrderPanel.vue - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+      ErrorLogs.writeToLog(err.message)
     }
   })
 }
@@ -1004,7 +1025,7 @@ onMounted(() => {
       keyboard: false
     })
   } catch (error) {
-    console.log(error);
+    ErrorLogs.writeToLog(`OnMounted on OrderPanel.vue : ${error}`)
   }
 })
 </script>

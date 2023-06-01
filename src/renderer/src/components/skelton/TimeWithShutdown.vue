@@ -39,6 +39,7 @@ import { onMounted, ref } from 'vue'
 import Auth from '../../utils/Auth'
 import jwt_decode from 'jwt-decode'
 import moment from 'moment'
+import ErrorLogs from '../../utils/ErrorLogs'
 
 const router = useRouter()
 
@@ -78,6 +79,11 @@ const logoutFunc = async () => {
       router.replace('/auth/login')
       Sweetalert.alertSuccess('You are logout')
   }).catch((err) => {
+    if (err.response) {
+      ErrorLogs.writeToLog(`${err.response.status} | SendReport on TimeWithShutdown.vue - ${err.response.data.message}`)
+    } else {
+      ErrorLogs.writeToLog(err.message)
+    }
     Sweetalert.alertError(AuthCheck.defaultErrorResponse())
     console.log(err);
     console.log(logoutPayload.username);

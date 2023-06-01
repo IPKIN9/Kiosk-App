@@ -70,6 +70,7 @@ import Paggination from '../Paggination.vue'
 import AuthCheck from '../../utils/AuthCheck'
 import Sweetalert from '../../utils/Sweetalert'
 import eventIcon from '../../assets/img/event.png'
+import ErrorLogs from '../../utils/ErrorLogs'
 
 const emits = defineEmits(['clickEvent'])
 
@@ -114,8 +115,10 @@ const getEvent = () => {
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        ErrorLogs.writeToLog(`${err.response.status} | GetEvent on EventPanel.vue - ${err.response.data.message}`)
       } else {
         Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        ErrorLogs.writeToLog(err.message)
       }
     })
 }
