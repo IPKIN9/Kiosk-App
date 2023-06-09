@@ -98,11 +98,18 @@ import { computed, onMounted, reactive, watch } from 'vue';
     let proc = getPageOf()
     let count = []
 
+    if (props.config.page === 1) {
+      configButton.firstButton = 0
+      configButton.endButton = 3
+    }
+
     for (let index = configButton.firstButton; index < proc && index < configButton.endButton; index++) {
       if (index != -1) {
         count.push(index + 1)
       }
     }
+
+    console.log(count);
     return count
   })
 

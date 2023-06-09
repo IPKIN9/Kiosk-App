@@ -104,7 +104,7 @@
               <div class="col-lg-6">
                 <div class="input-group input-group-merge">
                   <span class="input-group-text"><i class="bx bx-search"></i></span>
-                  <input @keyup="getTicketList('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
+                  <input @keyup="searchTicket('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
                 </div>
               </div>
             </div>
@@ -535,10 +535,10 @@ const disabledSelectedTicket = () => {
 }
 
 const getTicketList = (params) => {
-  if (params == 'search') {
-    ticketParams.page = 1
-    ticketList.value = []
-  }
+  // if (params == 'search') {
+  //   ticketParams.page = 1
+  //   ticketList.value = []
+  // }
   Ticket.getList(ticketParams)
   .then((res) => {
 
@@ -567,14 +567,19 @@ const getTicketList = (params) => {
     });
 };
 
+const searchTicket = () => {
+  ticketList.value = []
+  paginateTicket(1)
+}
+
 const paginateTicket = (params) => {
   disabledSelectedTicket()
   ticketParams.page = params
-  if (ticketParams.search.length >= 1) {
-    getTicketList('search')
-  } else {
+  // if (ticketParams.search.length >= 1) {
+  //   getTicketList('search')
+  // } else {
     getTicketList()
-  }
+  // }
 }
 
 const ticketSelectedList = ref([])
