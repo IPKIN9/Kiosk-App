@@ -110,6 +110,13 @@
 			const encodedData = params.get('data');
 			const dataString = decodeURIComponent(encodedData);
 			const data = JSON.parse(dataString);
+			function splitName(nama){
+				if (nama.length <= 18) {
+					return nama;
+				} else {
+					return nama.substring(0, 19) + "...";
+				}
+			}
 			window.onload = function(){
 				const content = document.getElementById('content')
 				content.innerHTML = ''
@@ -126,7 +133,7 @@
 										Cashier
 									</td>
 									<td>
-										${key.username}
+										${ splitName(key.username) }
 									</td>
 								</tr>
 

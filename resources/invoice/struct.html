@@ -110,6 +110,13 @@
 			const encodedData = params.get('data');
 			const dataString = decodeURIComponent(encodedData);
 			const data = JSON.parse(dataString);
+			function splitName(nama){
+				if (nama.length <= 18) {
+					return nama;
+				} else {
+					return nama.substring(0, 19) + "...";
+				}
+			}
 			window.onload = function(){
 				const content = document.getElementById('content')
 				content.innerHTML = ''
@@ -147,13 +154,13 @@
 								<tr class="item">
 									<td>Event</td>
 									<td>
-										${data.event_name}
+										${ splitName(data.event_name) }
 									</td>
 								</tr>
 
 								<tr class="item">
 									<td>Area</td>
-									<td>${key.bench_area}</td>
+									<td>${ splitName(key.bench_area) }</td>
 								</tr>
 
 								<tr class="item">
