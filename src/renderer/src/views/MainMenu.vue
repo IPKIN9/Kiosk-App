@@ -15,12 +15,16 @@
             <span @click="goToSetting"><i class="fs-3 fa-solid fa-gear"></i></span>
           </div>
           <div class="d-flex small">
-            <div class="col-lg-3">Kios Label</div>
+            <div class="col-lg-3">Kios Name</div>
             <div class="col-lg">: {{ envConfig.RENDERER_VITE_KIOSK_LABEL }}</div>
           </div>
           <div class="d-flex small" style="margin-top: -3px;">
             <div class="col-lg-3">Operator</div>
             <div class="col-lg">: {{ userName }}</div>
+          </div>
+          <div class="d-flex small" style="margin-top: -3px;">
+            <div class="col-lg-3">Versi</div>
+            <div class="col-lg">: {{ versi }}</div>
           </div>
           <!-- <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">kios label</small>
@@ -104,7 +108,7 @@
                   <span class="col-lg-3">
                     Receive
                   </span>
-                  <span class="ms-3 col-lg-9">: {{ Currency.rupiahValue(order.total_price_receive) }} Rp</span>
+                  <span class="ms-3 col-lg-9">: Rp. {{ Currency.rupiahValue(order.total_price_receive) }}</span>
                 </li>
                 <li class="d-flex">
                   <span class="col-lg-3">
@@ -421,6 +425,7 @@ import ReportPanel from '../components/skelton/ReportPanel.vue'
 // GET FUNCTION
 // ##########################################################
 const payloadList = ref([])
+const versi = import.meta.env.RENDERER_VITE_APP_VERSION
 
 const meta = reactive({
   page: 1,
@@ -528,6 +533,7 @@ const addTicketList = (params) => {
     ticket.classList.remove('bg-cs-orange')
     ticket.classList.add('bg-cs-muted')
   }
+
 }
 
 const qrcode = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL');
@@ -748,8 +754,12 @@ const sendReactivate = () => {
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
       reactivePayload.order_ticket_id = ticketList.value[key].id
-
+      
       Ticket.reactiveTicket(reactivePayload).then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
       })
     }
     Sweetalert.alertSuccess('User has been confirmed')
@@ -815,10 +825,10 @@ const showHideModal = (params) => {
     case 'qr-code':
       if (params.type === 'open') {
         getOrderDetail(params.orderId)
-
+        
         qrModal.value.show()
       } else if (params.type === 'close')
-        ticketList.value = []
+        // ticketList.value = [] 
         orderDetail.detail_ticket = []
         qrModal.value.hide()
       break;
@@ -838,7 +848,7 @@ const showHideModal = (params) => {
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()
-        ticketList.value = []
+        // ticketList.value = []
         clearLoginPayload()
       break
     
