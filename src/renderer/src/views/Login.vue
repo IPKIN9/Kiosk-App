@@ -105,6 +105,7 @@ const fetchGrantToken = () => {
       }
     })
     .catch((err) => {
+      Sweetalert.alertClose()
       if (err.response) {
 				let msg = AuthCheck.errorResponse(err.response.status)
 				Sweetalert.alertError(msg)
@@ -141,6 +142,7 @@ const fetchUserToken = () => {
             (role) => role.roles_name === "cashier"
           );
         });
+        Sweetalert.alertClose()
         if (isAdmin) {
           localStorage.setItem("user", token)
           router.push("/");
@@ -149,6 +151,7 @@ const fetchUserToken = () => {
         }
       })
       .catch((err) => {
+        Sweetalert.alertClose()
         if (err.response) {
           let code = err.response.data.name
           if (code === 'UNAUTHORIZED_FAILURE') {
@@ -172,6 +175,7 @@ const fetchUserToken = () => {
 }
 
 const submitData = () => {
+  Sweetalert.alertLoading()
   loginError.value = false
   const grantToken = localStorage.getItem("token")
   if (grantToken) {
