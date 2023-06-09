@@ -63,7 +63,7 @@
       <div class="col-lg-5">
         <div class="input-group input-group-merge">
           <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-          <input v-model="meta.search" @keyup="getOrderList" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
+          <input v-model="meta.search" @keyup="getDataBySearch" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
             aria-describedby="basic-addon-search31">
         </div>
       </div>
@@ -360,7 +360,8 @@
         <div class="form-password-toggle mt-3">
           <label class="form-label" for="basic-default-password12">Password</label>
           <div class="input-group">
-            <input v-model="loginPayload.password" :type="isHidden ? 'password':'text'" class="form-control" placeholder="············" aria-describedby="basic-default-password2">
+            <input v-model="loginPayload.password" :type="isHidden ? 'password':'text'" class="form-control" placeholder="············" aria-describedby="basic-default-password2"
+            maxlength="80">
             <span @click="passHidden" class="input-group-text cursor-pointer"><i :class="isHidden? 'bx bx-hide':'bx bx-show'"></i></span>
           </div>
           <div v-if="message != null">
@@ -401,7 +402,7 @@ import { useVuelidate } from '@vuelidate/core'
 import kioskIcon from '../assets/img/kiosk.png'
 import BaseModal from '../components/BaseModal.vue';
 import Paggination from '../components/Paggination.vue'
-import { required, helpers } from '@vuelidate/validators'
+import { required, helpers, maxLength } from '@vuelidate/validators'
 import BaseButton from '../components/Button/BaseButton.vue'
 import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
@@ -454,6 +455,12 @@ const getOrderList = () => {
         ErrorLogs.writeToLog(err.message)
       }
     })
+}
+
+const getDataBySearch = () => {
+  meta.page = 1
+  getOrderList()
+  paginate
 }
 
 // ORDER DETAIL FUNCTION
@@ -662,7 +669,7 @@ const loginRules = computed(() => {
   return {
     username: {
       required,
-      notSimbols: helpers.withMessage('Value cannot contain special char and spacing', notSimbols)
+      maxLengthValue: maxLength(80),
     },
     password: { required }
   }
@@ -764,8 +771,18 @@ const sendReactivate = () => {
     }
     Sweetalert.alertSuccess('User has been confirmed')
   } else {
+    
     Ticket.reactiveTicket(reactivePayload).then((res) => {
       Sweetalert.alertSuccess(res.data.message)
+    })
+    .catch((err) => {
+      if (err.response && err.response.status != 0) {
+        let code = err.response.status
+        ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
+        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+      } else {
+        ErrorLogs('Send Reactive Error on MainMenu.vue')
+      }
     })
   }
  } catch {

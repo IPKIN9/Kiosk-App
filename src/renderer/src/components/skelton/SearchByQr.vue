@@ -131,6 +131,6 @@
   }
 
   const reactivTicket = () => {
-    emits('reactivated', qrCodeList.order_id)
+    emits('reactivated', qrCodeList.id)
   }
 </script>
