@@ -454,6 +454,8 @@ const orderProccess = async () => {
       }
     })
     .catch((err) => {
+      setToDefault()
+      showHideOrder()
       if (err.response) {
         let code = err.response.status
         Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
