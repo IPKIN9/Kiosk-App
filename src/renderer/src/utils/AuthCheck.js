@@ -69,7 +69,7 @@ export default {
       case 422:
         msg = 'Sorry, please check your setting again!.'
         localStorage.setItem('RENDERER_VITE_MERCHANT_ID', 1)
-        localStorage.setItem('IS_CONFIG', false)
+        localStorage.setItem('IS_CONFIG', true)
         break;
 
       case 403:

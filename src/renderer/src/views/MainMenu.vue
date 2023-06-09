@@ -161,21 +161,22 @@
     </div>
   </div>
 
-  <BaseModal @click-event="showHideModal({model: 'qr-code', type:'close'})" label="Reprint Qr" sizing="modal-lg" modal-id="qr-code">
+  <BaseModal @click-event="showHideModal({model: 'qr-code', type:'close'})" label="Reprint QR" sizing="modal-lg" modal-id="qr-code">
     <template v-slot:body>
       <div class="d-flex" style="margin-top: -15px;">
         <span class="card-title">Select ticket or print all</span>
+        <span v-if="orderDetail.detail_ticket.length === 0" class="card-title">Ticket order has been refunded</span>
       </div>
       <div class="m-2">
         <div class="row">
           <div class="col-lg-12" v-if="orderDetail">
-            <div class="p-1 row justify-content-center" style="margin-top: -10px;">
+            <div class="p-1 row justify-content-center" style="margin-top: -10px;" id="qrSelected">
               <a v-for="(seat, index) in orderDetail.detail_ticket" :key="index" @click="addTicketList({id: seat.id, bench_number: seat.bench_number})" :id="`ticket-${seat.id}`" 
               role="button" class="col-lg-2 bg-cs-muted text-center py-3 fs-5 m-2 rounded text-white">
                 {{ seat.bench_number.toUpperCase() }}</a>
             </div>
           </div>
-          <div class="col-lg-12 mt-5 d-flex justify-content-center">
+          <div class="col-lg-12 mt-5 d-flex justify-content-center" v-if="orderDetail.detail_ticket.length >= 1">
             <BaseButton @click-event="printQr(ticketList.length < 1 ? 'all' : '')" :disabled="printButton" class="btn-lg btn-primary float-end fs-3"><i class='fs-3 fas fa-print'></i> PRINT {{ ticketList.length >= 1 ? ticketList.length : 'All' }}</BaseButton>
             <BaseButton @click-event="loginFrom" type-button="reactivated" :disabled="ticketList.length >= 1 ? false : true" class="btn-lg bg-cs-orange text-white float-start fs-3 ms-3"><i class="fa-solid fa-qrcode"></i> REACTIVATED</BaseButton>
           </div>
@@ -257,7 +258,7 @@
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Event name</span>
-                  <span>{{ orderDetail.event.name }}</span>
+                  <span>{{ Other.splitName(orderDetail.event.name) }}</span>
                 </div>
               </div>
             </li>
@@ -293,11 +294,11 @@
               <div class="row">
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Customer name</span>
-                  <span>{{ orderDetail.detail_ticket[0].order_gender === 'L' ? 'Tn.' : 'Ny.' }} {{ orderDetail.detail_ticket[0].order_name }}</span>
+                  <span>{{ orderDetail.detail_ticket[0].order_gender === 'L' ? 'Tn.' : 'Ny.' }} {{ Other.splitName(orderDetail.detail_ticket[0].order_name) }}</span>
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Email</span>
-                  <span>{{ orderDetail.detail_ticket[0].order_email }}</span>
+                  <span>{{ Other.splitName(orderDetail.detail_ticket[0].order_email) }}</span>
                 </div>
               </div>
             </li>
@@ -317,7 +318,7 @@
               <div class="row">
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Bench area</span>
-                  <span>{{ orderDetail.detail_ticket[0].bench_area.toUpperCase() }}</span>
+                  <span>{{ Other.splitName(orderDetail.detail_ticket[0].bench_area.toUpperCase()) }}</span>
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Total Ticket</span>
@@ -350,7 +351,7 @@
       <div class="px-4">
         <h3 class="text-center" style="position: relative; top: -65px; margin-bottom: -65px;">Confirmation</h3>
         <div class="form-group mt-5">
-          <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" />
+          <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" maxLength="50" />
           <div v-if="message != null">
             <span v-for="error in v3$.username.$errors" :key="error.$uid">
               <small class="text-danger text-lowercase">{{ error.$message }}</small>
@@ -422,6 +423,7 @@ import Sweetalert from '../utils/Sweetalert'
 import BaseInput from '../components/input/BaseInput.vue'
 import SearchByQr from '../components/skelton/SearchByQr.vue'
 import ReportPanel from '../components/skelton/ReportPanel.vue'
+import Other from '../utils/Other'
 
 // GET FUNCTION
 // ##########################################################
@@ -636,6 +638,7 @@ const loginFrom = (params) => {
   } else if (params.typeButton == 'reactivated'){
     qrModal.value.hide()
     typeConfirm.value = 'reactivated'
+    console.log(ticketList.value);
   }
   showHideModal({model: 'confirm-modal', type: 'open'})
 }
@@ -669,7 +672,7 @@ const loginRules = computed(() => {
   return {
     username: {
       required,
-      maxLengthValue: maxLength(80),
+      maxLengthValue: maxLength(50),
     },
     password: { required }
   }
@@ -753,29 +756,38 @@ const sendRefund = () => {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
       ErrorLogs.writeToLog(err.message)
     }
+    console.log(err);
   })
 }
 
 const sendReactivate = () => {
  try {
+  console.log(ticketList.value);
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
       reactivePayload.order_ticket_id = ticketList.value[key].id
       
       Ticket.reactiveTicket(reactivePayload).then((res) => {
         console.log(res);
+        Sweetalert.alertSuccess('User has been confirmed')
       })
       .catch((err) => {
         console.log(err);
+        if (err.response && err.response.status != 0) {
+          let code = err.response.status
+          ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
+          Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        } else {
+          ErrorLogs('Send Reactive Error on MainMenu.vue')
+        }
       })
     }
-    Sweetalert.alertSuccess('User has been confirmed')
   } else {
-    
     Ticket.reactiveTicket(reactivePayload).then((res) => {
       Sweetalert.alertSuccess(res.data.message)
     })
     .catch((err) => {
+      console.log(err);
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
@@ -837,10 +849,30 @@ const qrModal = ref(null)
 const detailModal = ref(null)
 const confirmModal = ref(null)
 
+const removeSelectedTicket = () => {
+  let div    = document.querySelector('#qrSelected')
+  let buttons = div.getElementsByTagName('a')
+
+  for (let i = 0; i < buttons.length; i++) {
+  let button = buttons[i];
+
+    // Memeriksa apakah elemen memiliki kelas bg-cs-orange
+    if (button.classList.contains("bg-cs-orange")) {
+      // Menghapus kelas bg-cs-orange
+      button.classList.remove("bg-cs-orange");
+      // Menambahkan kelas bg-cs-muted
+      button.classList.add("bg-cs-muted");
+    }
+  }
+}
+
 const showHideModal = (params) => {
   switch (params.model) {
     case 'qr-code':
       if (params.type === 'open') {
+        ticketList.value = []
+        removeSelectedTicket()
+        
         getOrderDetail(params.orderId)
         
         qrModal.value.show()
@@ -861,7 +893,7 @@ const showHideModal = (params) => {
 
     case 'confirm-modal':
       if (params.type === 'open') {
-      
+           
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()

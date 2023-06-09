@@ -31,7 +31,7 @@ function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setFullScreen(true)
-    mainWindow.setAlwaysOnTop(true)
+    mainWindow.setAlwaysOnTop(false)
     })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

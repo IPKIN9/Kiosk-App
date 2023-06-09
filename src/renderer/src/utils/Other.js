@@ -14,5 +14,13 @@ export default {
     }
 		const decoded = jwt_decode(token);
     return decoded
+  },
+  
+  splitName(nama){
+    if (nama.length <= 18) {
+      return nama;
+    } else {
+      return nama.substring(0, 19) + "...";
+    }
   }
 }
