@@ -636,6 +636,7 @@ const loginFrom = (params) => {
   } else if (params.typeButton == 'reactivated'){
     qrModal.value.hide()
     typeConfirm.value = 'reactivated'
+    console.log(ticketList.value);
   }
   showHideModal({model: 'confirm-modal', type: 'open'})
 }
@@ -753,29 +754,38 @@ const sendRefund = () => {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
       ErrorLogs.writeToLog(err.message)
     }
+    console.log(err);
   })
 }
 
 const sendReactivate = () => {
  try {
+  console.log(ticketList.value);
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
       reactivePayload.order_ticket_id = ticketList.value[key].id
       
       Ticket.reactiveTicket(reactivePayload).then((res) => {
         console.log(res);
+        Sweetalert.alertSuccess('User has been confirmed')
       })
       .catch((err) => {
         console.log(err);
+        if (err.response && err.response.status != 0) {
+          let code = err.response.status
+          ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
+          Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        } else {
+          ErrorLogs('Send Reactive Error on MainMenu.vue')
+        }
       })
     }
-    Sweetalert.alertSuccess('User has been confirmed')
   } else {
-    
     Ticket.reactiveTicket(reactivePayload).then((res) => {
       Sweetalert.alertSuccess(res.data.message)
     })
     .catch((err) => {
+      console.log(err);
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
@@ -841,6 +851,7 @@ const showHideModal = (params) => {
   switch (params.model) {
     case 'qr-code':
       if (params.type === 'open') {
+        ticketList.value = []
         getOrderDetail(params.orderId)
         
         qrModal.value.show()
@@ -861,7 +872,7 @@ const showHideModal = (params) => {
 
     case 'confirm-modal':
       if (params.type === 'open') {
-      
+           
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()

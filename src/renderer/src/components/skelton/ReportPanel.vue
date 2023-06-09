@@ -21,11 +21,11 @@
         </div>
         <div class="form-group mt-3">
           <label for="" class="form-label fs-5">Start Date</label>
-          <VueDatePicker v-model="reportParams.start" placeholder="Select date..." utc :clearable="false"></VueDatePicker>
-        </div>
+          <VueDatePicker format="dd/MM/yy, HH:mm" v-model="reportParams.start" placeholder="Select date..." utc :clearable="false"></VueDatePicker>
+        </div> 
         <div class="form-group mt-3">
           <label for="" class="form-label fs-5">End Date</label>
-          <VueDatePicker v-model="reportParams.end" placeholder="Select date..."
+          <VueDatePicker format="dd/MM/yy, HH:mm" v-model="reportParams.end" placeholder="Select date..."
           :min-date="minDate" utc :clearable="false"></VueDatePicker>
         </div>
       </div>
