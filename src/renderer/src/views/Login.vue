@@ -16,7 +16,7 @@
             <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
               <div class="mb-4">
                 <label for="email" class="form-label">Email or Username</label>
-                <input v-model="dataPayload.username" type="text" class="form-control" id="email" name="email-username"
+                <input v-model="dataPayload.username" type="text" class="form-control" id="email" name="email-username" maxlength="80"
                   placeholder="Enter your email or username" autofocus />
               </div>
               <div class="mb-4 form-password-toggle">
@@ -27,7 +27,7 @@
                   <input v-model="dataPayload.password" :type="passType === true ? 'password' : 'text'" id="password"
                     class="form-control" name="password"
                     placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                    aria-describedby="password" />
+                    aria-describedby="password" maxlength="80" />
                   <a role="button" @click="showPassword" class="input-group-text cursor-pointer"><i
                       class="bx bx-hide"></i></a>
                 </div>

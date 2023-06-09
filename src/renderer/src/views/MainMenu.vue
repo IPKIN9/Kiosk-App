@@ -15,12 +15,16 @@
             <span @click="goToSetting"><i class="fs-3 fa-solid fa-gear"></i></span>
           </div>
           <div class="d-flex small">
-            <div class="col-lg-3">Kios Label</div>
+            <div class="col-lg-3">Kios Name</div>
             <div class="col-lg">: {{ envConfig.RENDERER_VITE_KIOSK_LABEL }}</div>
           </div>
           <div class="d-flex small" style="margin-top: -3px;">
             <div class="col-lg-3">Operator</div>
             <div class="col-lg">: {{ userName }}</div>
+          </div>
+          <div class="d-flex small" style="margin-top: -3px;">
+            <div class="col-lg-3">Versi</div>
+            <div class="col-lg">: {{ versi }}</div>
           </div>
           <!-- <div class="d-flex" style="margin-bottom: -2px !important;">
             <small class="text-uppercase">kios label</small>
@@ -59,7 +63,7 @@
       <div class="col-lg-5">
         <div class="input-group input-group-merge">
           <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-          <input v-model="meta.search" @keyup="getOrderList" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
+          <input v-model="meta.search" @keyup="getDataBySearch" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
             aria-describedby="basic-addon-search31">
         </div>
       </div>
@@ -104,7 +108,7 @@
                   <span class="col-lg-3">
                     Receive
                   </span>
-                  <span class="ms-3 col-lg-9">: {{ Currency.rupiahValue(order.total_price_receive) }} Rp</span>
+                  <span class="ms-3 col-lg-9">: Rp. {{ Currency.rupiahValue(order.total_price_receive) }}</span>
                 </li>
                 <li class="d-flex">
                   <span class="col-lg-3">
@@ -356,7 +360,8 @@
         <div class="form-password-toggle mt-3">
           <label class="form-label" for="basic-default-password12">Password</label>
           <div class="input-group">
-            <input v-model="loginPayload.password" :type="isHidden ? 'password':'text'" class="form-control" placeholder="············" aria-describedby="basic-default-password2">
+            <input v-model="loginPayload.password" :type="isHidden ? 'password':'text'" class="form-control" placeholder="············" aria-describedby="basic-default-password2"
+            maxlength="80">
             <span @click="passHidden" class="input-group-text cursor-pointer"><i :class="isHidden? 'bx bx-hide':'bx bx-show'"></i></span>
           </div>
           <div v-if="message != null">
@@ -397,7 +402,7 @@ import { useVuelidate } from '@vuelidate/core'
 import kioskIcon from '../assets/img/kiosk.png'
 import BaseModal from '../components/BaseModal.vue';
 import Paggination from '../components/Paggination.vue'
-import { required, helpers } from '@vuelidate/validators'
+import { required, helpers, maxLength } from '@vuelidate/validators'
 import BaseButton from '../components/Button/BaseButton.vue'
 import EventPanel from '../components/skelton/EventPanel.vue'
 import OrderPanel from '../components/skelton/OrderPanel.vue';
@@ -421,6 +426,7 @@ import ReportPanel from '../components/skelton/ReportPanel.vue'
 // GET FUNCTION
 // ##########################################################
 const payloadList = ref([])
+const versi = import.meta.env.RENDERER_VITE_APP_VERSION
 
 const meta = reactive({
   page: 1,
@@ -449,6 +455,12 @@ const getOrderList = () => {
         ErrorLogs.writeToLog(err.message)
       }
     })
+}
+
+const getDataBySearch = () => {
+  meta.page = 1
+  getOrderList()
+  paginate
 }
 
 // ORDER DETAIL FUNCTION
@@ -528,6 +540,7 @@ const addTicketList = (params) => {
     ticket.classList.remove('bg-cs-orange')
     ticket.classList.add('bg-cs-muted')
   }
+
 }
 
 const qrcode = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL');
@@ -656,7 +669,7 @@ const loginRules = computed(() => {
   return {
     username: {
       required,
-      notSimbols: helpers.withMessage('Value cannot contain special char and spacing', notSimbols)
+      maxLengthValue: maxLength(80),
     },
     password: { required }
   }
@@ -748,14 +761,28 @@ const sendReactivate = () => {
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
       reactivePayload.order_ticket_id = ticketList.value[key].id
-
+      
       Ticket.reactiveTicket(reactivePayload).then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
       })
     }
     Sweetalert.alertSuccess('User has been confirmed')
   } else {
+    
     Ticket.reactiveTicket(reactivePayload).then((res) => {
       Sweetalert.alertSuccess(res.data.message)
+    })
+    .catch((err) => {
+      if (err.response && err.response.status != 0) {
+        let code = err.response.status
+        ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
+        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+      } else {
+        ErrorLogs('Send Reactive Error on MainMenu.vue')
+      }
     })
   }
  } catch {
@@ -815,10 +842,10 @@ const showHideModal = (params) => {
     case 'qr-code':
       if (params.type === 'open') {
         getOrderDetail(params.orderId)
-
+        
         qrModal.value.show()
       } else if (params.type === 'close')
-        ticketList.value = []
+        // ticketList.value = [] 
         orderDetail.detail_ticket = []
         qrModal.value.hide()
       break;
@@ -838,7 +865,7 @@ const showHideModal = (params) => {
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()
-        ticketList.value = []
+        // ticketList.value = []
         clearLoginPayload()
       break
     

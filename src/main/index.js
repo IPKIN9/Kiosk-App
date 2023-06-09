@@ -2,9 +2,17 @@ import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { exec } from 'child_process'
-import { join } from 'path'
+import path, { join } from 'path'
 import fs from 'fs';
 import moment from 'moment'
+
+function forceQuit() {
+  const windows = BrowserWindow.getAllWindows()
+  windows.forEach((win) => {
+    win.close()
+  })
+  app.quit()
+}
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -22,9 +30,9 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    mainWindow.setFullScreen(false)
-    mainWindow.setAlwaysOnTop(false)
-  })
+    mainWindow.setFullScreen(true)
+    mainWindow.setAlwaysOnTop(true)
+    })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -45,12 +53,19 @@ function createWindow() {
     mainWindow.webContents.openDevTools()
   })
 
+  globalShortcut.register('F11', () => {
+  })
+  
+  globalShortcut.register('F5', () => {
+    mainWindow.webContents.reload()
+  })
+    
   globalShortcut.register('CommandOrControl+Shift+X', () => {
-    const windows = BrowserWindow.getAllWindows()
-    windows.forEach((win) => {
-      win.close()
-    })
-    app.quit()
+    mainWindow.webContents.executeJavaScript(`
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    `)
+    forceQuit()
   })
 }
 
@@ -143,7 +158,23 @@ ipcMain.handle('shutdown', async (event) => {
 ipcMain.handle('writeToLog', async (event, message) => {
   const logMessage = `${moment().format('DD/MM/YYYY HH:mm:ss')}: ${message}\n`;
 
-  fs.appendFile('app.log', logMessage, (err) => {
+  const logFileName = 'app.log';
+  let logFolderPath;
+
+  if (process.platform === 'win32') {
+    logFolderPath = path.join(app.getPath('documents'), 'WoviLog');
+  } else {
+    logFolderPath = path.join(app.getPath('home'), 'Documents', 'WoviLog');
+  }
+
+  const logFilePath = path.join(logFolderPath, logFileName);
+
+  // Memastikan direktori log ada sebelum menulis ke file
+  if (!fs.existsSync(logFolderPath)) {
+    fs.mkdirSync(logFolderPath, { recursive: true });
+  }
+
+  fs.appendFile(logFilePath, logMessage, (err) => {
     if (err) {
       console.error('Gagal menulis ke file log:', err);
     }

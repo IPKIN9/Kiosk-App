@@ -13,7 +13,7 @@
     </div>
     <div class="col-lg-6">
       <div class="mb-3">
-        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_KIOSK_LABEL" label="Kiosk Device Label" class="form-control-lg" placeholder="Kiosk 001"/>
+        <BaseInput v-model="deviceIppAddress.RENDERER_VITE_KIOSK_LABEL" label="Kiosk Name" class="form-control-lg" placeholder="Kiosk 001"/>
       </div>
     </div>
   </div>

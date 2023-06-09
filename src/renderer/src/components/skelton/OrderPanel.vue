@@ -23,9 +23,10 @@
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.name" label="Full Name" class="form-control-lg" :is-required="true"
                 placeholder="Input here..." />
-              <span v-for="error in v$.name.$errors" :key="error.$uid">
-                <small class="text-danger text-lowercase">this name {{ error.$message }}</small>
-              </span>
+                <span v-for="error in v$.name.$errors" :key="error.$uid">
+                  <small class="text-danger text-lowercase">this name {{ error.$message }}</small>
+                </span>
+                <small class="text-muted row"><p class="col-lg">Max name 35 characters</p></small>
             </div>
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.email" label="Email" type-of="email" class="form-control-lg" :is-required="true"
@@ -108,8 +109,8 @@
               </div>
             </div>
             <div class="row mt-3 mx-1 border border-1 rounded p-3" style="height: 65vh">
+              <h5 class="form-label fs-5">Max Selected Ticket 10</h5>
               <div v-if="ticketSelectedList.length >= 1" class="col-lg-2 text-center border-end">
-                <span class="form-label fs-5">Selected Ticket</span>
                 <div class="d-flex justify-content-center mt-2">
                   <h6 class="text-primary">Total selected {{ticketSelectedList.length}}</h6>
                 </div>
@@ -125,7 +126,7 @@
                 </div>
                 <div class="container">
                   <div class="row row-cols-6">
-                    <div v-for="(ticket, index) in ticketList" :key="index" class="col-lg-2 col-sm-3">
+                    <div id="allTicket" v-for="(ticket, index) in ticketList" :key="index" class="col-lg-2 col-sm-3">
                       <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
                       :id="`ticketId-${ticket.id}`" 
                       class="ticket-button card py-4 text-white text-center fs-6 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
@@ -207,7 +208,7 @@
                 </ul>
                 <div class="mt-3 row">
                   <div class="col-lg-3">
-                    <a @click="sendPayment" :class="payInfo.status === 'progress' ? 'disabled' : payInfo.status === 'validated' ? 'disabled' : isMatch === 'danger-input' ? 'disabled' : ''" role="button" class="card bg-cs-orange text-white text-center py-3 mt-2">
+                    <a @click="sendPayment" :class="payInfo.status === 'progress' ? 'disabled bg-cs-muted' : payInfo.status === 'validated' ? 'disabled bg-cs-muted' : isMatch === 'danger-input' ? 'disabled bg-cs-muted' : parseInt(Currency.unformat(payPayload.total_receive)) > (parseInt(payInfo.total_price) * 2) ? 'disabled bg-cs-muted' : 'bg-cs-orange'" role="button" class="card text-white text-center py-3 mt-2">
                       <span class="fs-3">
                         Pay Now
                       </span>
@@ -253,9 +254,6 @@
                       </a>
                       <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
                         <i class='fs-3 fas fa-qrcode'></i>
-                      </a>
-                      <a role="button" :class="printButton ? 'disabled' : ''" class="card py-4 px-5 text-white bg-danger">
-                        <i class='fs-3 fas fa-paper-plane'></i>
                       </a>
                     </div>
                   </div>
@@ -402,6 +400,7 @@ const rules = computed(() => {
   return {
     name: { 
       required,
+      maxLengthValue: maxLength(35),
       myField: helpers.withMessage("value cannot contain special characters", nameRegex)
     },
     gender: { required },
@@ -516,8 +515,17 @@ const setArea = (params) => {
   ticketParams.eventarea = params.value;
   areaName.value = params.display.toUpperCase()
   ticketSelectedList.value = []
-
+ 
   getTicketList();
+  if (ticketList.value.length >= 1) {
+    let ticketId = document.querySelectorAll('#allTicket a')
+    ticketId.forEach((i) => {
+      if (i.classList.contains('bg-cs-orange')) {
+        i.classList.remove('bg-cs-orange')
+        i.classList.add('bg-cs-seat')
+      }
+    })
+  }
 };
 
 const ticketList = ref([]);
@@ -685,7 +693,8 @@ const payRules = computed(() => {
     order_id: { required },
     total_receive: { 
       required,
-      myField: helpers.withMessage("value cannot zero", notZero) 
+      myField: helpers.withMessage("value cannot zero", notZero),
+      maxLengthValue: maxLength(9),
     },
     payment_method_id: { 
       required,
