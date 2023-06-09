@@ -1,10 +1,20 @@
-import { app, shell, BrowserWindow } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { exec } from 'child_process'
+import path, { join } from 'path'
+import fs from 'fs';
+import moment from 'moment'
+
+function forceQuit() {
+  const windows = BrowserWindow.getAllWindows()
+  windows.forEach((win) => {
+    win.close()
+  })
+  app.quit()
+}
 
 function createWindow() {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -13,38 +23,55 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      nodeIntegration: false,
+      contextIsolation: true
     }
   })
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-  })
+    mainWindow.setFullScreen(true)
+    mainWindow.setAlwaysOnTop(true)
+    })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  globalShortcut.register('Shift+F1', () => {
+    mainWindow.setAlwaysOnTop(false)
+  })
+
+  globalShortcut.register('F12', () => {
+    mainWindow.webContents.openDevTools()
+  })
+
+  globalShortcut.register('F11', () => {
+  })
+  
+  globalShortcut.register('F5', () => {
+    mainWindow.webContents.reload()
+  })
+    
+  globalShortcut.register('CommandOrControl+Shift+X', () => {
+    mainWindow.webContents.executeJavaScript(`
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    `)
+    forceQuit()
+  })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -52,20 +79,104 @@ app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  const windows = BrowserWindow.getAllWindows()
+  windows.forEach((win) => {
+    win.close()
+  })
+  app.quit()
 })
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+app.disableHardwareAcceleration()
+
+let content = null
+
+const printStruct = (arg, callBack) => {
+  const dataString = JSON.stringify(arg)
+  const encodedData = encodeURIComponent(dataString)
+  let dirname = join(__dirname, '../../resources/invoice')
+  const win = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  })
+
+  win.loadURL(`file://${dirname}/${arg.path_file}?data=${encodedData}`)
+  win.webContents.openDevTools()
+  content = win
+}
+
+ipcMain.handle('ready-print', (event, data) => {
+  const options = {
+    silent: true,
+    margins: {
+      marginType: 'none'
+    },
+    scaleFactor: 85,
+    printBackground: false,
+    deviceName: 'POS-80C'
+  }
+
+  content.webContents.print(options, (success, errorType) => {
+    if (success) {
+      content.close()
+    } else {
+      console.log(errorType)
+    }
+  })
+})
+
+ipcMain.handle('printStruct', async (event, arg) => {
+  console.log('Received message from renderer:', arg)
+  const sendFeedBack = () => {}
+
+  printStruct(arg, sendFeedBack)
+})
+
+ipcMain.handle('shutdown', async (event) => {
+  const windows = BrowserWindow.getAllWindows()
+  windows.forEach((win) => {
+    win.close()
+  })
+
+  exec('shutdown /s /t 0', (error) => {
+    if (error) {
+      console.error(`exec error: ${error}`)
+      return
+    }
+    app.quit()
+  })
+})
+
+ipcMain.handle('writeToLog', async (event, message) => {
+  const logMessage = `${moment().format('DD/MM/YYYY HH:mm:ss')}: ${message}\n`;
+
+  const logFileName = 'app.log';
+  let logFolderPath;
+
+  if (process.platform === 'win32') {
+    logFolderPath = path.join(app.getPath('documents'), 'WoviLog');
+  } else {
+    logFolderPath = path.join(app.getPath('home'), 'Documents', 'WoviLog');
+  }
+
+  const logFilePath = path.join(logFolderPath, logFileName);
+
+  // Memastikan direktori log ada sebelum menulis ke file
+  if (!fs.existsSync(logFolderPath)) {
+    fs.mkdirSync(logFolderPath, { recursive: true });
+  }
+
+  fs.appendFile(logFilePath, logMessage, (err) => {
+    if (err) {
+      console.error('Gagal menulis ke file log:', err);
+    }
+  });
+});
