@@ -108,8 +108,6 @@ import { computed, onMounted, reactive, watch } from 'vue';
         count.push(index + 1)
       }
     }
-
-    console.log(count);
     return count
   })
 

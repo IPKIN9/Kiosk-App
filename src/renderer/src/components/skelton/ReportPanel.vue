@@ -10,7 +10,7 @@
           <label for="" class="form-label fs-5">Event</label>
           <div class="input-group input-group-merge">
             <span class="input-group-text"><i class="bx bx-search"></i></span>
-            <input v-model="eventParams.search" @keyup="getEventList" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search...">
+            <input v-model="eventParams.search" @keyup="getEventList" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..." maxlength="150">
           </div>
           <select v-show="eventList.length >= 1" class="form-select mt-2" size="5">
             <option v-for="(event, index) in eventList" :key="index" class="fs-3 text-capitalize" :value="event.id" @click="setEventName({id: event.id, name: event.name})">{{ event.code }} | {{ event.name }}</option>

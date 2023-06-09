@@ -22,7 +22,7 @@
           <div class="container-fluid row">
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.name" label="Full Name" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." maxLength="50" />
                 <span v-for="error in v$.name.$errors" :key="error.$uid">
                   <small class="text-danger text-lowercase">this name {{ error.$message }}</small>
                 </span>
@@ -30,7 +30,7 @@
             </div>
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.email" label="Email" type-of="email" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." maxLength="50" />
               <span v-for="error in v$.email.$errors" :key="error.$uid">
                 <small class="text-danger text-lowercase">this email {{ error.$message }}</small>
               </span>
@@ -39,7 +39,7 @@
           <div class="container-fluid row mt-3">
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.no_hp" label="Phone Number" type-of="number" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "15" />
               <span v-for="error in v$.no_hp.$errors" :key="error.$uid">
                 <small class="text-danger text-lowercase">this phone number {{ error.$message }}</small>
               </span>
@@ -400,19 +400,20 @@ const rules = computed(() => {
   return {
     name: { 
       required,
-      maxLengthValue: maxLength(35),
+      maxLengthValue: maxLength(50),
       myField: helpers.withMessage("value cannot contain special characters", nameRegex)
     },
     gender: { required },
     email: {
       required,
       email,
+      maxLengthValue: maxLength(50)
     },
     no_hp: {
       required,
       numeric,
-      minLengthValue: minLength(11),
-      maxLengthValue: maxLength(13),
+      minLengthValue: minLength(10),
+      maxLengthValue: maxLength(15),
       myField: helpers.withMessage(
           "value must be 62 in first",
           phoneRegex

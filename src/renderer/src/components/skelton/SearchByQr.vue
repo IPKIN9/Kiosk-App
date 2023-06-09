@@ -12,7 +12,7 @@
       <div class="input-group input-group-merge">
         <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
         <input v-model="qrCodePayload.qr_value" type="text" class="form-control form-control-lg" placeholder="Search by qr..." aria-label="Search..."
-          id="auto-focus-search">
+          id="auto-focus-search" maxlength="150">
       </div>
       <ul v-show="qrCodeList.length >= 1" class="mt-4 list-group">
         <li class="list-group item">
