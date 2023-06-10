@@ -10,9 +10,6 @@
               <span @click="goToSetting"><i class="fs-3 fa-solid fa-gear"></i></span>
             </div>
             <p>Please sign-in to your account</p>
-            <div class="d-flex mb-4">
-              <span v-if="loginError" class="mt-2 text-danger">Wrong username or password. please try again</span>
-            </div>
             <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
               <div class="mb-4">
                 <label for="email" class="form-label">Email or Username</label>
@@ -58,6 +55,7 @@ import Auth from '../utils/Auth'
 import CryptoJS from 'crypto-js'
 import Invoke from '../utils/Invoke'
 import ErrorLogs from '../utils/ErrorLogs'
+import IziToast from '../utils/IziToast'
 
 const userCount = ref(false)
 
@@ -81,8 +79,6 @@ const passType = ref(true)
 const showPassword = () => {
   passType.value === true ? passType.value = false : passType.value = true
 }
-
-const loginError = ref(false)
 
 const dataPayload = reactive({
   username: '',
@@ -157,7 +153,8 @@ const fetchUserToken = () => {
           if (code === 'UNAUTHORIZED_FAILURE') {
             fetchGrantToken()
           } else if(err.response.status == '401') {
-            loginError.value = true
+            let msg = JSON.parse(err.response.data.message)
+            IziToast.warningNotif(msg.message)
           } else {
             let msg = AuthCheck.errorResponse(err.response.status)
             Sweetalert.alertError(msg)
@@ -176,7 +173,6 @@ const fetchUserToken = () => {
 
 const submitData = () => {
   Sweetalert.alertLoading()
-  loginError.value = false
   const grantToken = localStorage.getItem("token")
   if (grantToken) {
     fetchUserToken()

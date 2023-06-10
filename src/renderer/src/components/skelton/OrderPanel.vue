@@ -319,6 +319,7 @@ import Order from "../../utils/Order"
 import Other from "../../utils/Other"
 import Merchant from "../../utils/Merchant"
 import ErrorLogs from '../../utils/ErrorLogs';
+import IziToast from '../../utils/IziToast';
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -455,14 +456,13 @@ const orderProccess = async () => {
       }
     })
     .catch((err) => {
-      setToDefault()
-      showHideOrder()
       if (err.response) {
+        // showHideOrder()
         let code = err.response.status
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        IziToast.warningNotif(err.response.data.message)
         ErrorLogs.writeToLog(`${err.response.status} | OrderUpsert on OrderPanel.vue - ${err.response.data.message}`)
       } else {
-        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        IziToast.warningNotif(err.message)
         ErrorLogs.writeToLog(err.message)
       }
     })
