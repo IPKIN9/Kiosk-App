@@ -60,15 +60,18 @@
           </select>
         </div>
       </div>
-      <div class="col-lg-5">
+      <div class="col-lg-4">
         <div class="input-group input-group-merge">
           <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
           <input v-model="meta.search" @keyup="getDataBySearch" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
             aria-describedby="basic-addon-search31">
         </div>
       </div>
-      <div class="col-lg-3">
-        <SearchByQr @reactivated="reactiveFromQrSearch"/>
+      <div class="col-lg-4">
+        <div class="d-flex">
+          <SearchByQr @reactivated="reactiveFromQrSearch"/>
+          <BaseButton class="btn-primary ms-3"><i class="fa-solid fa-rotate fs-4 mt-1 ms-1"></i></BaseButton>
+        </div>
       </div>
     </div>
   </div>
@@ -424,6 +427,7 @@ import BaseInput from '../components/input/BaseInput.vue'
 import SearchByQr from '../components/skelton/SearchByQr.vue'
 import ReportPanel from '../components/skelton/ReportPanel.vue'
 import Other from '../utils/Other'
+import IziToast from '../utils/IziToast'
 
 // GET FUNCTION
 // ##########################################################
@@ -958,9 +962,14 @@ const interval = setInterval(() => {
   checkConnection()
 }, 1000)
 
+const intervalOrder = setInterval(() => {
+  getOrderList()
+}, 30000)
+
 onMounted(() => {
   try {
     interval
+    intervalOrder
     qrModal.value = new Modal('#qr-code', {
       keyboard: false
     })
@@ -979,6 +988,7 @@ onMounted(() => {
     v3$ = useVuelidate(loginRules, loginPayload)
   } catch (error) {
     clearInterval(interval)
+    clearInterval(intervalOrder)
     ErrorLogs.writeToLog(`On mounted MainMenu.vue: ${error}`)
   }
 })
