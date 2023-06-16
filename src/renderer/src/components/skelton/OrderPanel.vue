@@ -92,7 +92,7 @@
             <div class="row">
               <div class="col-lg-4">
                 <BaseSelectSearch @focus="getAreaList()" :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
-                  label="Select Area" />
+                  label="Select Area" placeholder="Search event area..."/>
               </div>
               <div class="col-lg-2">
                 <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-select form-control-lg">

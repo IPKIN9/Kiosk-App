@@ -2,7 +2,7 @@
   <div :id="idInput.search" class="input-group input-group-merge">
     <span class="input-group-text"><i class="bx bx-search"></i></span>
     <input v-bind="$attrs" @click="getSearchWidth()" @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"
-    type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search...">
+    type="text" class="form-control form-control-lg" :placeholder="placeholder" aria-label="Search...">
   </div>
   <div style="position: absolute;
     z-index: 100;" v-show="selectShow" :id="idInput.select" class="mt-2">
@@ -23,6 +23,10 @@ const props = defineProps({
   modelValue: [String, Number],
   label: String,
   idInput: Object,
+  placeholder: {
+    type: String,
+    default: 'Search...'
+  }
 })
 
 const emits = defineEmits(['eventClick', 'update:modelValue'])

@@ -244,7 +244,7 @@
             </li>
             <li class="list-group-item">
               <div class="row">
-                <div class="col-lg-4">Refund</div>
+                <div class="col-lg-4">Change</div>
                 <div class="col">: Rp {{ Currency.rupiahValue(orderDetail.refund ? orderDetail.refund : 0) }}</div>
               </div>
             </li>
