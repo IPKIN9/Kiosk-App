@@ -428,6 +428,7 @@ import SearchByQr from '../components/skelton/SearchByQr.vue'
 import ReportPanel from '../components/skelton/ReportPanel.vue'
 import Other from '../utils/Other'
 import IziToast from '../utils/IziToast'
+import Approval from '../utils/Approval'
 
 // GET FUNCTION
 // ##########################################################
@@ -706,11 +707,11 @@ const loginProcess = async () => {
       
       if (verifiedPersonalData) {
         if (typeConfirm.value == 'refund') {
-          refundPayload.confirm_by = item.data.users.username
+          refundPayload.confirm_by = item.data.users.email
           refundPayload.order_id = orderId.value
           sendRefund()
         } else if (typeConfirm.value == 'reactivated') {
-          reactivePayload.confirm_by = item.data.users.username
+          reactivePayload.confirm_by = item.data.users.email
           sendReactivate()
         }
       } else {
@@ -743,29 +744,34 @@ const loginProcess = async () => {
 
 const sendRefund = () => {
   Order.refundOrder(refundPayload)
-  .then((res) => {
+  .then(() => {
+    Approval.createApproval({
+      approval_name: refundPayload.confirm_by,
+      action: `approve:kiosk_refund:order_id:${refundPayload.order_id}`,
+      "is_approve": true,
+      "reason": refundPayload.description
+    })
     Sweetalert.alertSuccess('User has been confirmed')
-		clearLoginPayload()
   })
   .catch((err) => {
     if (err.response && err.response.status != 0) {
       let code = err.response.status
+
       if (code == 401 || code == 422) {
-      Sweetalert.alertError('Refund order in progress!')
+        Sweetalert.alertError('Refund order in progress!')
       } else {
-      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        Sweetalert.alertError(err.response.data.message)
       }
+
       ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
       ErrorLogs.writeToLog(err.message)
     }
-    console.log(err);
   })
 }
 
 const sendReactivate = () => {
- try {
   console.log(ticketList.value);
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
@@ -774,16 +780,25 @@ const sendReactivate = () => {
       Ticket.reactiveTicket(reactivePayload).then((res) => {
         console.log(res);
         Sweetalert.alertSuccess('User has been confirmed')
+        Approval.createApproval({
+          approval_name: reactivePayload.confirm_by,
+          action: `approve:kiosk_reactivate:order_ticket_id:${reactivePayload.order_ticket_id}`,
+          "is_approve": true,
+          "reason": reactivePayload.description
+        })
       })
       .catch((err) => {
+        Sweetalert.alertClose()
         console.log(err);
+
         if (err.response && err.response.status != 0) {
           let code = err.response.status
           ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
-          Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+          Sweetalert.alertError(err.response.data.message)
         } else {
           ErrorLogs('Send Reactive Error on MainMenu.vue')
         }
+
       })
     }
   } else {
@@ -792,19 +807,18 @@ const sendReactivate = () => {
     })
     .catch((err) => {
       console.log(err);
+      Sweetalert.alertClose()
+
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        Sweetalert.alertError(err.response.data.message)
       } else {
         ErrorLogs('Send Reactive Error on MainMenu.vue')
       }
+      
     })
   }
- } catch {
-  ErrorLogs('Send Reactive Error on MainMenu.vue')
- }
-
 }
 
 const clearLoginPayload = () => {
