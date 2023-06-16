@@ -156,8 +156,10 @@ const sendReport = async () => {
           event_date: moment(item.data[key].event_date).format('DD MMM, YYYY | HH:mm'),
           total_price: `Rp. ${Currency.rupiahValue(parseInt(item.data[key].total_price))}`,
           total_price_receive: `Rp. ${Currency.rupiahValue(parseInt(item.data[key].total_price_receive))}`,
-          total_refund: item.data[key].total_refund ? `Rp. ${Currency.rupiahValue(parseInt(item.data[key].total_refund))}` : 'no refund',
-          print_date: moment(item.data[key].created_at).format('DD MMM, YYYY | HH:mm')
+          total_change: item.data[key].total_refund ? `Rp. ${Currency.rupiahValue(parseInt(item.data[key].total_refund))}` : 'no refund',
+          start: moment(reportParams.start).format('DD MMMM, YYYY'),
+          end: moment(reportParams.end).format('DD MMMM, YYYY'),
+          print_date: moment(item.data[key].created_at).format('DD MMMM, YYYY | HH:mm')
         })
       }
 
