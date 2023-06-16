@@ -91,7 +91,7 @@
           <div class="container-fluid py-2">
             <div class="row">
               <div class="col-lg-4">
-                <BaseSelectSearch :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
+                <BaseSelectSearch @focus="getAreaList()" :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
                   label="Select Area" />
               </div>
               <div class="col-lg-2">
@@ -485,7 +485,6 @@ const ticketShowUp = () => {
   console.log(`Area: ${ticketList.value.length}`);
   panelActive.value = "ticket";
   titlePanel.value = 'CUSTOMER FORM / TICKET'
-  getAreaList();
 };
 
 const areaName = ref('')
@@ -501,6 +500,7 @@ const getAreaList = () => {
   .then((res) => {
     let item = res.data;
     areaList.value = item.data;
+    console.log('pukimai', item);
   })
   .catch((err) => {
     if (err.response) {

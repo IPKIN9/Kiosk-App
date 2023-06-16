@@ -1,7 +1,7 @@
 <template>
   <div :id="idInput.search" class="input-group input-group-merge">
     <span class="input-group-text"><i class="bx bx-search"></i></span>
-    <input @keyup="getSearchWidth" @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"
+    <input v-bind="$attrs" @click="getSearchWidth()" @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"
     type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search...">
   </div>
   <div style="position: absolute;
@@ -15,7 +15,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
   listOfSelect: Object,
@@ -28,11 +28,11 @@ const props = defineProps({
 const emits = defineEmits(['eventClick', 'update:modelValue'])
 
 const selectShow = ref(false)
+
 const getSearchWidth = () => {
   let search = document.getElementById(props.idInput.search)
   let width = search.offsetWidth
   document.getElementById(props.idInput.select).style.width = `${width}px`
-
   selectShow.value = true
 }
 
@@ -47,5 +47,11 @@ const listSearch = computed(() => {
     return Object.keys(computedObj)
       .some(key => ('' + computedObj[key]).toLowerCase().includes(props.modelValue.toLowerCase()))
   })
+})
+
+watch(props, (newProps) => {
+  if (newProps.listOfSelect.length <= 0) {
+    selectShow.value = false
+  }
 })
 </script>
