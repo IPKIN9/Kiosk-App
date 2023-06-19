@@ -70,7 +70,7 @@
       <div class="col-lg-4">
         <div class="d-flex">
           <SearchByQr @reactivated="reactiveFromQrSearch"/>
-          <BaseButton class="btn-primary ms-3"><i class="fa-solid fa-rotate fs-4 mt-1 ms-1"></i></BaseButton>
+          <BaseButton @click-event="() => {getOrderList('/'); IziToast.successNotif({title: 'Success', message: 'Get new data successfully'})}" class="btn-primary ms-3"><i class="fa-solid fa-rotate fs-4 mt-1 ms-1"></i></BaseButton>
         </div>
       </div>
     </div>
@@ -140,7 +140,7 @@
               </ul>
             </td>
             <td>
-              <ul v-if="order.status == 'validated'" class="list-group">
+              <ul v-if="order.status == 'validated' || order.status == 'refund' || order.status == 'completed'" class="list-group">
                 <li class="d-flex">
                   <BaseButton @click-event="showHideModal({model: 'detail-order', type:'open', orderId: order.id})" class="btn-xl btn-primary"><i class="bx bx-receipt fs-3 m-2"></i></BaseButton>
                   <BaseButton @click-event="showHideModal({model: 'qr-code', type:'open', orderId: order.id})" class="btn-xl bg-cs-orange ms-3"><i class="text-white bx bx-qr fs-3 m-2"></i></BaseButton>
@@ -244,7 +244,7 @@
             </li>
             <li class="list-group-item">
               <div class="row">
-                <div class="col-lg-4">Refund</div>
+                <div class="col-lg-4">Change</div>
                 <div class="col">: Rp {{ Currency.rupiahValue(orderDetail.refund ? orderDetail.refund : 0) }}</div>
               </div>
             </li>
@@ -285,7 +285,7 @@
                 </div>
               </div>
               <div class="row mt-5">
-                <div class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id, typeButton: 'refund'})" class="btn btn-danger btn-lg">REFUND</button></div>
+                <div v-if="orderDetail.order.status !== 'refund'" class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id, typeButton: 'refund'})" class="btn btn-danger btn-lg">REFUND</button></div>
               </div>
             </li>
           </ul>
@@ -855,7 +855,8 @@ const filterList = [
   { value: 'validated', display: 'Validated' },
   { value: 'progress', display: 'Progress' },
   { value: 'unpaid', display: 'Unpaid' },
-  { value: 'expired', display: 'Expired' }
+  { value: 'expired', display: 'Expired' },
+  { value: 'refund', display: 'Refund' }
 ]
 
 const paginate = (params) => {

@@ -37,6 +37,17 @@ export default {
     }
   },
 
+  getUserName(user){
+    let token = ''
+    if (user) {
+      token = user
+    } else {
+      token = localStorage.getItem('user');
+    }
+		const decoded = jwt_decode(token);
+    return decoded.username
+  },
+
 	getScope() {
     const token = localStorage.getItem("user")
     if (token) {
