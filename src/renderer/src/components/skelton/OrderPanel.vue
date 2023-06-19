@@ -249,12 +249,18 @@
                   </div>
                   <div v-if="showQrSend" class="col-lg-12 mt-5">
                     <div class="d-flex justify-content-around">
-                      <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
-                        <i class='fs-3 fas fa-print'></i>
-                      </a>
-                      <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
-                        <i class='fs-3 fas fa-qrcode'></i>
-                      </a>
+                      <div class="row">
+                        <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
+                          <i class='fs-3 fas fa-print'></i>
+                        </a>
+                        <h4 class="text-center mt-4">Print Invoice</h4>
+                      </div>
+                      <div class="row">
+                        <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
+                          <i class='fs-3 fas fa-qrcode'></i>
+                        </a>
+                        <h4 class="text-center mt-4">Print QR Ticket</h4>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -900,13 +906,14 @@ const printStruct = async () => {
   const structData = {
     path_file: 'invoice.html',
     merchant: merchantName.value,
-    label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
+    label: `Kiosk Name: ${localStorage.getItem('RENDERER_VITE_KIOSK_LABEL')}`,
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
     total_order: strukInvoice.value.order.total_order,
     total_price_receive: strukInvoice.value.order.total_price_receive,
     payment_method_name: strukInvoice.value.order.payment_method_name,
-    payment_date: moment(strukInvoice.value.order.payment_date).format('DD MMM, YYYY | HH:mm')
+    payment_date: moment(strukInvoice.value.order.payment_date).format('DD MMM, YYYY | HH:mm'),
+    cashier: AuthCheck.getUserName()
   }
 
   Invoke.printFunction(structData)
@@ -930,6 +937,7 @@ const printQr = async () => {
     event_name: strukInvoice.value.event.name,
     start_date: moment(strukInvoice.value.event.event_date).format('DD MMM, YYYY | HH:mm'),
     end_date: moment(strukInvoice.value.event.event_end_date).format('DD MMM, YYYY | HH:mm'),
+    cashier: AuthCheck.getUserName(),
     detail_ticket: []
   }
   for await (const key of struk) {
