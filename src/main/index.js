@@ -50,14 +50,14 @@ function createWindow() {
   })
 
   globalShortcut.register('F12', () => {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   })
 
   globalShortcut.register('F11', () => {
   })
   
   globalShortcut.register('F5', () => {
-    mainWindow.webContents.reload()
+    // mainWindow.webContents.reload()
   })
     
   globalShortcut.register('CommandOrControl+Shift+X', () => {
@@ -100,7 +100,7 @@ const printStruct = (arg, callBack) => {
   const encodedData = encodeURIComponent(dataString)
   let dirname = join(__dirname, '../../resources/invoice')
   const win = new BrowserWindow({
-    show: true,
+    show: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
