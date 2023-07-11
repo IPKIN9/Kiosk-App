@@ -50,14 +50,14 @@ function createWindow() {
   })
 
   globalShortcut.register('F12', () => {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   })
 
   globalShortcut.register('F11', () => {
   })
   
   globalShortcut.register('F5', () => {
-    mainWindow.webContents.reload()
+    // mainWindow.webContents.reload()
   })
     
   globalShortcut.register('CommandOrControl+Shift+X', () => {
