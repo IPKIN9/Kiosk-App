@@ -60,15 +60,18 @@
           </select>
         </div>
       </div>
-      <div class="col-lg-5">
+      <div class="col-lg-4">
         <div class="input-group input-group-merge">
           <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
           <input v-model="meta.search" @keyup="getDataBySearch" type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..."
             aria-describedby="basic-addon-search31">
         </div>
       </div>
-      <div class="col-lg-3">
-        <SearchByQr @reactivated="reactiveFromQrSearch"/>
+      <div class="col-lg-4">
+        <div class="d-flex">
+          <SearchByQr @reactivated="reactiveFromQrSearch"/>
+          <BaseButton @click-event="() => {getOrderList('/'); IziToast.successNotif({title: 'Success', message: 'Get new data successfully'})}" class="btn-primary ms-3"><i class="fa-solid fa-rotate fs-4 mt-1 ms-1"></i></BaseButton>
+        </div>
       </div>
     </div>
   </div>
@@ -137,7 +140,7 @@
               </ul>
             </td>
             <td>
-              <ul v-if="order.status == 'validated'" class="list-group">
+              <ul v-if="order.status == 'validated' || order.status == 'refund' || order.status == 'completed'" class="list-group">
                 <li class="d-flex">
                   <BaseButton @click-event="showHideModal({model: 'detail-order', type:'open', orderId: order.id})" class="btn-xl btn-primary"><i class="bx bx-receipt fs-3 m-2"></i></BaseButton>
                   <BaseButton @click-event="showHideModal({model: 'qr-code', type:'open', orderId: order.id})" class="btn-xl bg-cs-orange ms-3"><i class="text-white bx bx-qr fs-3 m-2"></i></BaseButton>
@@ -161,21 +164,22 @@
     </div>
   </div>
 
-  <BaseModal @click-event="showHideModal({model: 'qr-code', type:'close'})" label="Reprint Qr" sizing="modal-lg" modal-id="qr-code">
+  <BaseModal @click-event="showHideModal({model: 'qr-code', type:'close'})" label="Reprint QR" sizing="modal-lg" modal-id="qr-code">
     <template v-slot:body>
       <div class="d-flex" style="margin-top: -15px;">
         <span class="card-title">Select ticket or print all</span>
+        <span v-if="orderDetail.detail_ticket.length === 0" class="card-title">Ticket order has been refunded</span>
       </div>
       <div class="m-2">
         <div class="row">
           <div class="col-lg-12" v-if="orderDetail">
-            <div class="p-1 row justify-content-center" style="margin-top: -10px;">
+            <div class="p-1 row justify-content-center" style="margin-top: -10px;" id="qrSelected">
               <a v-for="(seat, index) in orderDetail.detail_ticket" :key="index" @click="addTicketList({id: seat.id, bench_number: seat.bench_number})" :id="`ticket-${seat.id}`" 
               role="button" class="col-lg-2 bg-cs-muted text-center py-3 fs-5 m-2 rounded text-white">
                 {{ seat.bench_number.toUpperCase() }}</a>
             </div>
           </div>
-          <div class="col-lg-12 mt-5 d-flex justify-content-center">
+          <div class="col-lg-12 mt-5 d-flex justify-content-center" v-if="orderDetail.detail_ticket.length >= 1">
             <BaseButton @click-event="printQr(ticketList.length < 1 ? 'all' : '')" :disabled="printButton" class="btn-lg btn-primary float-end fs-3"><i class='fs-3 fas fa-print'></i> PRINT {{ ticketList.length >= 1 ? ticketList.length : 'All' }}</BaseButton>
             <BaseButton @click-event="loginFrom" type-button="reactivated" :disabled="ticketList.length >= 1 ? false : true" class="btn-lg bg-cs-orange text-white float-start fs-3 ms-3"><i class="fa-solid fa-qrcode"></i> REACTIVATED</BaseButton>
           </div>
@@ -240,7 +244,7 @@
             </li>
             <li class="list-group-item">
               <div class="row">
-                <div class="col-lg-4">Refund</div>
+                <div class="col-lg-4">Change</div>
                 <div class="col">: Rp {{ Currency.rupiahValue(orderDetail.refund ? orderDetail.refund : 0) }}</div>
               </div>
             </li>
@@ -257,7 +261,7 @@
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Event name</span>
-                  <span>{{ orderDetail.event.name }}</span>
+                  <span>{{ Other.splitName(orderDetail.event.name) }}</span>
                 </div>
               </div>
             </li>
@@ -281,7 +285,7 @@
                 </div>
               </div>
               <div class="row mt-5">
-                <div class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id, typeButton: 'refund'})" class="btn btn-danger btn-lg">REFUND</button></div>
+                <div v-if="orderDetail.order.status !== 'refund'" class="col-lg-4"><button @click="loginFrom({dataId: orderDetail.order.id, typeButton: 'refund'})" class="btn btn-danger btn-lg">REFUND</button></div>
               </div>
             </li>
           </ul>
@@ -293,11 +297,11 @@
               <div class="row">
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Customer name</span>
-                  <span>{{ orderDetail.detail_ticket[0].order_gender === 'L' ? 'Tn.' : 'Ny.' }} {{ orderDetail.detail_ticket[0].order_name }}</span>
+                  <span>{{ orderDetail.detail_ticket[0].order_gender === 'L' ? 'Tn.' : 'Ny.' }} {{ Other.splitName(orderDetail.detail_ticket[0].order_name) }}</span>
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Email</span>
-                  <span>{{ orderDetail.detail_ticket[0].order_email }}</span>
+                  <span>{{ Other.splitName(orderDetail.detail_ticket[0].order_email) }}</span>
                 </div>
               </div>
             </li>
@@ -317,7 +321,7 @@
               <div class="row">
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Bench area</span>
-                  <span>{{ orderDetail.detail_ticket[0].bench_area.toUpperCase() }}</span>
+                  <span>{{ Other.splitName(orderDetail.detail_ticket[0].bench_area.toUpperCase()) }}</span>
                 </div>
                 <div class="col-lg-6 row">
                   <span class="form-label my-label text-muted">Total Ticket</span>
@@ -350,7 +354,7 @@
       <div class="px-4">
         <h3 class="text-center" style="position: relative; top: -65px; margin-bottom: -65px;">Confirmation</h3>
         <div class="form-group mt-5">
-          <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" />
+          <BaseInput v-model="loginPayload.username" label="Username" placeholder="Input username here..." type-of="text" maxLength="50" />
           <div v-if="message != null">
             <span v-for="error in v3$.username.$errors" :key="error.$uid">
               <small class="text-danger text-lowercase">{{ error.$message }}</small>
@@ -422,6 +426,9 @@ import Sweetalert from '../utils/Sweetalert'
 import BaseInput from '../components/input/BaseInput.vue'
 import SearchByQr from '../components/skelton/SearchByQr.vue'
 import ReportPanel from '../components/skelton/ReportPanel.vue'
+import Other from '../utils/Other'
+import IziToast from '../utils/IziToast'
+import Approval from '../utils/Approval'
 
 // GET FUNCTION
 // ##########################################################
@@ -636,6 +643,7 @@ const loginFrom = (params) => {
   } else if (params.typeButton == 'reactivated'){
     qrModal.value.hide()
     typeConfirm.value = 'reactivated'
+    console.log(ticketList.value);
   }
   showHideModal({model: 'confirm-modal', type: 'open'})
 }
@@ -669,7 +677,7 @@ const loginRules = computed(() => {
   return {
     username: {
       required,
-      maxLengthValue: maxLength(80),
+      maxLengthValue: maxLength(50),
     },
     password: { required }
   }
@@ -699,11 +707,11 @@ const loginProcess = async () => {
       
       if (verifiedPersonalData) {
         if (typeConfirm.value == 'refund') {
-          refundPayload.confirm_by = item.data.users.username
+          refundPayload.confirm_by = item.data.users.email
           refundPayload.order_id = orderId.value
           sendRefund()
         } else if (typeConfirm.value == 'reactivated') {
-          reactivePayload.confirm_by = item.data.users.username
+          reactivePayload.confirm_by = item.data.users.email
           sendReactivate()
         }
       } else {
@@ -736,18 +744,25 @@ const loginProcess = async () => {
 
 const sendRefund = () => {
   Order.refundOrder(refundPayload)
-  .then((res) => {
+  .then(() => {
+    Approval.createApproval({
+      approval_name: refundPayload.confirm_by,
+      action: `approve:kiosk_refund:order_id:${refundPayload.order_id}`,
+      "is_approve": true,
+      "reason": refundPayload.description
+    })
     Sweetalert.alertSuccess('User has been confirmed')
-		clearLoginPayload()
   })
   .catch((err) => {
     if (err.response && err.response.status != 0) {
       let code = err.response.status
+
       if (code == 401 || code == 422) {
-      Sweetalert.alertError('Refund order in progress!')
+        Sweetalert.alertError('Refund order in progress!')
       } else {
-      Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        Sweetalert.alertError(err.response.data.message)
       }
+
       ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
     } else {
       Sweetalert.alertError(AuthCheck.defaultErrorResponse())
@@ -757,38 +772,53 @@ const sendRefund = () => {
 }
 
 const sendReactivate = () => {
- try {
+  console.log(ticketList.value);
   if (ticketList.value.length >= 1) {
     for (const key in ticketList.value) {
       reactivePayload.order_ticket_id = ticketList.value[key].id
       
       Ticket.reactiveTicket(reactivePayload).then((res) => {
         console.log(res);
+        Sweetalert.alertSuccess('User has been confirmed')
+        Approval.createApproval({
+          approval_name: reactivePayload.confirm_by,
+          action: `approve:kiosk_reactivate:order_ticket_id:${reactivePayload.order_ticket_id}`,
+          "is_approve": true,
+          "reason": reactivePayload.description
+        })
       })
       .catch((err) => {
+        Sweetalert.alertClose()
         console.log(err);
+
+        if (err.response && err.response.status != 0) {
+          let code = err.response.status
+          ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
+          Sweetalert.alertError(err.response.data.message)
+        } else {
+          ErrorLogs('Send Reactive Error on MainMenu.vue')
+        }
+
       })
     }
-    Sweetalert.alertSuccess('User has been confirmed')
   } else {
-    
     Ticket.reactiveTicket(reactivePayload).then((res) => {
       Sweetalert.alertSuccess(res.data.message)
     })
     .catch((err) => {
+      console.log(err);
+      Sweetalert.alertClose()
+
       if (err.response && err.response.status != 0) {
         let code = err.response.status
         ErrorLogs.writeToLog(`${err.response.status} | SendRefund - ${err.response.data.message}`)
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin))
+        Sweetalert.alertError(err.response.data.message)
       } else {
         ErrorLogs('Send Reactive Error on MainMenu.vue')
       }
+      
     })
   }
- } catch {
-  ErrorLogs('Send Reactive Error on MainMenu.vue')
- }
-
 }
 
 const clearLoginPayload = () => {
@@ -825,7 +855,8 @@ const filterList = [
   { value: 'validated', display: 'Validated' },
   { value: 'progress', display: 'Progress' },
   { value: 'unpaid', display: 'Unpaid' },
-  { value: 'expired', display: 'Expired' }
+  { value: 'expired', display: 'Expired' },
+  { value: 'refund', display: 'Refund' }
 ]
 
 const paginate = (params) => {
@@ -837,10 +868,30 @@ const qrModal = ref(null)
 const detailModal = ref(null)
 const confirmModal = ref(null)
 
+const removeSelectedTicket = () => {
+  let div    = document.querySelector('#qrSelected')
+  let buttons = div.getElementsByTagName('a')
+
+  for (let i = 0; i < buttons.length; i++) {
+  let button = buttons[i];
+
+    // Memeriksa apakah elemen memiliki kelas bg-cs-orange
+    if (button.classList.contains("bg-cs-orange")) {
+      // Menghapus kelas bg-cs-orange
+      button.classList.remove("bg-cs-orange");
+      // Menambahkan kelas bg-cs-muted
+      button.classList.add("bg-cs-muted");
+    }
+  }
+}
+
 const showHideModal = (params) => {
   switch (params.model) {
     case 'qr-code':
       if (params.type === 'open') {
+        ticketList.value = []
+        removeSelectedTicket()
+        
         getOrderDetail(params.orderId)
         
         qrModal.value.show()
@@ -861,7 +912,7 @@ const showHideModal = (params) => {
 
     case 'confirm-modal':
       if (params.type === 'open') {
-      
+           
         confirmModal.value.show()
       } else if (params.type === 'close')
         confirmModal.value.hide()
@@ -926,9 +977,14 @@ const interval = setInterval(() => {
   checkConnection()
 }, 1000)
 
+const intervalOrder = setInterval(() => {
+  getOrderList()
+}, 30000)
+
 onMounted(() => {
   try {
     interval
+    intervalOrder
     qrModal.value = new Modal('#qr-code', {
       keyboard: false
     })
@@ -947,6 +1003,7 @@ onMounted(() => {
     v3$ = useVuelidate(loginRules, loginPayload)
   } catch (error) {
     clearInterval(interval)
+    clearInterval(intervalOrder)
     ErrorLogs.writeToLog(`On mounted MainMenu.vue: ${error}`)
   }
 })

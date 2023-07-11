@@ -31,7 +31,7 @@ function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setFullScreen(true)
-    mainWindow.setAlwaysOnTop(true)
+    mainWindow.setAlwaysOnTop(false)
     })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -50,14 +50,14 @@ function createWindow() {
   })
 
   globalShortcut.register('F12', () => {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   })
 
   globalShortcut.register('F11', () => {
   })
   
   globalShortcut.register('F5', () => {
-    mainWindow.webContents.reload()
+    // mainWindow.webContents.reload()
   })
     
   globalShortcut.register('CommandOrControl+Shift+X', () => {

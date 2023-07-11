@@ -26,7 +26,7 @@
 
       <div class="input-group input-group-merge">
         <span class="input-group-text" id="basic-addon-search31"><i class="fs-4 bx bx-search"></i></span>
-          <input type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..." v-model="meta.search" @keyup="getEvent()" />
+          <input type="text" class="form-control form-control-lg" placeholder="Search..." aria-label="Search..." v-model="meta.search" @keyup="getEvent()" maxlength="150" />
         <span v-if="meta.search.length >= 5" @click.stop="clearSearch"
           class="text-muted input-group-text cursor-pointer"><i class="bx bx-trash fs-5"></i></span>
         <span v-if="loading" class="input-group-text">

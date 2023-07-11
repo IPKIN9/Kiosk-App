@@ -1,5 +1,5 @@
 <template>
-  <BaseButton @click-event="autFocus" class="bg-secondary text-white fs-4" style="width: 100% !important;" type="button" data-bs-toggle="offcanvas" data-bs-target="#searchByQr" aria-controls="searchByQr"><i class="fa-solid fa-qrcode me-3"></i><span>Search By <b>QR</b></span></BaseButton>
+  <BaseButton @click-event="autFocus" class="bg-light btn-outline-primary text-primary fs-4" style="width: 100% !important;" type="button" data-bs-toggle="offcanvas" data-bs-target="#searchByQr" aria-controls="searchByQr"><i class="fa-solid fa-qrcode me-3"></i><span>Search By <b>QR</b></span></BaseButton>
 
   <div class="offcanvas offcanvas-end" tabindex="-1" id="searchByQr" aria-labelledby="searchByQrLabel">
     <div class="offcanvas-header">
@@ -12,7 +12,7 @@
       <div class="input-group input-group-merge">
         <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
         <input v-model="qrCodePayload.qr_value" type="text" class="form-control form-control-lg" placeholder="Search by qr..." aria-label="Search..."
-          id="auto-focus-search">
+          id="auto-focus-search" maxlength="150">
       </div>
       <ul v-show="qrCodeList.length >= 1" class="mt-4 list-group">
         <li class="list-group item">
@@ -67,7 +67,9 @@
   const qrPath = localStorage.getItem('RENDERER_VITE_GOOGLE_CLOUD_STORAGE_URL')
 
   const autFocus = () => {
-    document.getElementById('auto-focus-search').focus()
+    setTimeout(() => {
+      document.getElementById('auto-focus-search').focus()
+    }, 500);
   }
 
   const qrCodeList = reactive({

@@ -37,6 +37,17 @@ export default {
     }
   },
 
+  getUserName(user){
+    let token = ''
+    if (user) {
+      token = user
+    } else {
+      token = localStorage.getItem('user');
+    }
+		const decoded = jwt_decode(token);
+    return decoded.username
+  },
+
 	getScope() {
     const token = localStorage.getItem("user")
     if (token) {
@@ -69,7 +80,7 @@ export default {
       case 422:
         msg = 'Sorry, please check your setting again!.'
         localStorage.setItem('RENDERER_VITE_MERCHANT_ID', 1)
-        localStorage.setItem('IS_CONFIG', false)
+        localStorage.setItem('IS_CONFIG', true)
         break;
 
       case 403:

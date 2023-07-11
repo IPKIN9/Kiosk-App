@@ -22,7 +22,7 @@
           <div class="container-fluid row">
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.name" label="Full Name" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." maxLength="50" />
                 <span v-for="error in v$.name.$errors" :key="error.$uid">
                   <small class="text-danger text-lowercase">this name {{ error.$message }}</small>
                 </span>
@@ -30,7 +30,7 @@
             </div>
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.email" label="Email" type-of="email" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." maxLength="50" />
               <span v-for="error in v$.email.$errors" :key="error.$uid">
                 <small class="text-danger text-lowercase">this email {{ error.$message }}</small>
               </span>
@@ -39,7 +39,7 @@
           <div class="container-fluid row mt-3">
             <div class="col-lg-6">
               <BaseInput v-model="customerPayload.no_hp" label="Phone Number" type-of="number" class="form-control-lg" :is-required="true"
-                placeholder="Input here..." />
+                placeholder="Input here..." oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "15" />
               <span v-for="error in v$.no_hp.$errors" :key="error.$uid">
                 <small class="text-danger text-lowercase">this phone number {{ error.$message }}</small>
               </span>
@@ -91,8 +91,8 @@
           <div class="container-fluid py-2">
             <div class="row">
               <div class="col-lg-4">
-                <BaseSelectSearch :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
-                  label="Select Area" />
+                <BaseSelectSearch @focus="getAreaList()" :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
+                  label="Select Area" placeholder="Search event area..."/>
               </div>
               <div class="col-lg-2">
                 <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-select form-control-lg">
@@ -104,7 +104,7 @@
               <div class="col-lg-6">
                 <div class="input-group input-group-merge">
                   <span class="input-group-text"><i class="bx bx-search"></i></span>
-                  <input @keyup="getTicketList('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
+                  <input @keyup="searchTicket('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
                 </div>
               </div>
             </div>
@@ -249,12 +249,18 @@
                   </div>
                   <div v-if="showQrSend" class="col-lg-12 mt-5">
                     <div class="d-flex justify-content-around">
-                      <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
-                        <i class='fs-3 fas fa-print'></i>
-                      </a>
-                      <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
-                        <i class='fs-3 fas fa-qrcode'></i>
-                      </a>
+                      <div class="row">
+                        <a role="button" :class="printButton ? 'disabled' : ''" @click="printStruct" class="card py-4 px-5 text-white bg-primary">
+                          <i class='fs-3 fas fa-print'></i>
+                        </a>
+                        <h4 class="text-center mt-4">Print Invoice</h4>
+                      </div>
+                      <div class="row">
+                        <a role="button" :class="printButton ? 'disabled' : ''" @click="printQr" class="card py-4 px-5 text-white bg-cs-orange">
+                          <i class='fs-3 fas fa-qrcode'></i>
+                        </a>
+                        <h4 class="text-center mt-4">Print QR Ticket</h4>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -319,6 +325,7 @@ import Order from "../../utils/Order"
 import Other from "../../utils/Other"
 import Merchant from "../../utils/Merchant"
 import ErrorLogs from '../../utils/ErrorLogs';
+import IziToast from '../../utils/IziToast';
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -400,19 +407,20 @@ const rules = computed(() => {
   return {
     name: { 
       required,
-      maxLengthValue: maxLength(35),
+      maxLengthValue: maxLength(50),
       myField: helpers.withMessage("value cannot contain special characters", nameRegex)
     },
     gender: { required },
     email: {
       required,
       email,
+      maxLengthValue: maxLength(50)
     },
     no_hp: {
       required,
       numeric,
-      minLengthValue: minLength(11),
-      maxLengthValue: maxLength(13),
+      minLengthValue: minLength(10),
+      maxLengthValue: maxLength(15),
       myField: helpers.withMessage(
           "value must be 62 in first",
           phoneRegex
@@ -455,11 +463,12 @@ const orderProccess = async () => {
     })
     .catch((err) => {
       if (err.response) {
+        // showHideOrder()
         let code = err.response.status
-        Sweetalert.alertError(AuthCheck.checkResponse(code, goToLogin()))
+        IziToast.warningNotif(err.response.data.message)
         ErrorLogs.writeToLog(`${err.response.status} | OrderUpsert on OrderPanel.vue - ${err.response.data.message}`)
       } else {
-        Sweetalert.alertError(AuthCheck.defaultErrorResponse())
+        IziToast.warningNotif(err.message)
         ErrorLogs.writeToLog(err.message)
       }
     })
@@ -482,7 +491,6 @@ const ticketShowUp = () => {
   console.log(`Area: ${ticketList.value.length}`);
   panelActive.value = "ticket";
   titlePanel.value = 'CUSTOMER FORM / TICKET'
-  getAreaList();
 };
 
 const areaName = ref('')
@@ -498,6 +506,7 @@ const getAreaList = () => {
   .then((res) => {
     let item = res.data;
     areaList.value = item.data;
+    console.log('pukimai', item);
   })
   .catch((err) => {
     if (err.response) {
@@ -535,10 +544,10 @@ const disabledSelectedTicket = () => {
 }
 
 const getTicketList = (params) => {
-  if (params == 'search') {
-    ticketParams.page = 1
-    ticketList.value = []
-  }
+  // if (params == 'search') {
+  //   ticketParams.page = 1
+  //   ticketList.value = []
+  // }
   Ticket.getList(ticketParams)
   .then((res) => {
 
@@ -567,14 +576,19 @@ const getTicketList = (params) => {
     });
 };
 
+const searchTicket = () => {
+  ticketList.value = []
+  paginateTicket(1)
+}
+
 const paginateTicket = (params) => {
   disabledSelectedTicket()
   ticketParams.page = params
-  if (ticketParams.search.length >= 1) {
-    getTicketList('search')
-  } else {
+  // if (ticketParams.search.length >= 1) {
+  //   getTicketList('search')
+  // } else {
     getTicketList()
-  }
+  // }
 }
 
 const ticketSelectedList = ref([])
@@ -892,13 +906,14 @@ const printStruct = async () => {
   const structData = {
     path_file: 'invoice.html',
     merchant: merchantName.value,
-    label: localStorage.getItem('RENDERER_VITE_KIOSK_LABEL'),
+    label: `Kiosk Name: ${localStorage.getItem('RENDERER_VITE_KIOSK_LABEL')}`,
     no_order: strukInvoice.value.order.no_order,
     booking_code: strukInvoice.value.order.booking_code,
     total_order: strukInvoice.value.order.total_order,
     total_price_receive: strukInvoice.value.order.total_price_receive,
     payment_method_name: strukInvoice.value.order.payment_method_name,
-    payment_date: moment(strukInvoice.value.order.payment_date).format('DD MMM, YYYY | HH:mm')
+    payment_date: moment(strukInvoice.value.order.payment_date).format('DD MMM, YYYY | HH:mm'),
+    cashier: AuthCheck.getUserName()
   }
 
   Invoke.printFunction(structData)
@@ -922,6 +937,7 @@ const printQr = async () => {
     event_name: strukInvoice.value.event.name,
     start_date: moment(strukInvoice.value.event.event_date).format('DD MMM, YYYY | HH:mm'),
     end_date: moment(strukInvoice.value.event.event_end_date).format('DD MMM, YYYY | HH:mm'),
+    cashier: AuthCheck.getUserName(),
     detail_ticket: []
   }
   for await (const key of struk) {
