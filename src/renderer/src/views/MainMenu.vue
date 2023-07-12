@@ -245,7 +245,7 @@
             <li class="list-group-item">
               <div class="row">
                 <div class="col-lg-4">Change</div>
-                <div class="col">: Rp {{ Currency.rupiahValue(orderDetail.refund ? orderDetail.refund : 0) }}</div>
+                <div class="col">: Rp {{ Currency.rupiahValue(orderDetail.order.total_price_receive > orderDetail.order.total_price ? orderDetail.order.total_price_receive - orderDetail.order.total_price : 0) }}</div>
               </div>
             </li>
           </ul>
@@ -752,6 +752,7 @@ const sendRefund = () => {
       "reason": refundPayload.description
     })
     Sweetalert.alertSuccess('User has been confirmed')
+    getOrderList()
   })
   .catch((err) => {
     if (err.response && err.response.status != 0) {

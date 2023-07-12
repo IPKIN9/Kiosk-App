@@ -66,19 +66,20 @@
                   <li class="list-group">
                     <BaseButton @click-event="ticketShowUp" class="btn-xl btn-primary py-4">SELECT TICKET</BaseButton>
                   </li>
-                  <div class="list-group mt-5">
-                    <div class="d-flex form-label">Ticket selected:</div>
-                    <div class="row py-1 px-2">
-                      <span style="padding: 8px !important; width: fit-content !important;" class="col-lg-2 m-1 card bg-cs-muted" v-for="(ticket, index) in ticketSelectedList">{{ ticket.bench_number }}</span>
-                    </div>
-                    <div v-if="ticketSelectedList.length <= 0" class="col-lg-12 text-center">
-                      <h5 class="text-danger">No Ticket Selected!</h5>
-                    </div>
-                  </div>
                 </ul>
               </div>
+              <div class="ps-4 pe-3 mt-5 box-seat2">
+                <div class="mb-4" v-for="(item, index) in ticketSelectedList" :key="index">
+                  <h6 class="px-2 text-uppercase">AREA: <b>{{ item.area_name }}</b> : {{ item.ticket.length }}</h6>
+                  <div class="row">
+                    <div v-for="(data, index2) in item.ticket" :key="index2" class="col-lg-2 seat-select text-center">
+                      <span>{{ data.bench_number }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="mt-5 float-end">
-                <BaseButton :disabled="ticketSelectedList.length <= 0 ? true : false" @click-event="orderProccess" class="btn-lg bg-cs-orange text-white py-3">Next Step
+                <BaseButton @click-event="orderProccess" class="btn-lg bg-cs-orange text-white py-3">Next Step
                 </BaseButton>
               </div>
             </div>
@@ -88,67 +89,7 @@
         <!-- Ticket Section -->
 
         <div class="tab-pane fade" :class="panelActive === 'ticket' ? 'show active' : ''" role="tabpanel">
-          <div class="container-fluid py-2">
-            <div class="row">
-              <div class="col-lg-4">
-                <BaseSelectSearch @focus="getAreaList()" :id-input="{search: 'areaSearch', select: 'areaSelect'}" v-model="areaName" @event-click="setArea" :list-of-select="areaList" :list-config-display="areaConfig"
-                  label="Select Area" placeholder="Search event area..."/>
-              </div>
-              <div class="col-lg-2">
-                <select @change="getTicketList()" v-model.number="ticketParams.limit" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-select form-control-lg">
-                  <option class="fs-3 my-1" value="120">Show of 120</option>
-                  <option class="fs-3 my-1" value="240">Show of 240</option>
-                  <option class="fs-3 my-1" value="480">Show of 480</option>
-                </select>
-              </div>
-              <div class="col-lg-6">
-                <div class="input-group input-group-merge">
-                  <span class="input-group-text"><i class="bx bx-search"></i></span>
-                  <input @keyup="searchTicket('search')" v-model="ticketParams.search" :disabled="ticketParams.eventarea == 0 ? true : false" class="form-control form-control-lg" placeholder="Search seat..." />
-                </div>
-              </div>
-            </div>
-            <div class="row mt-3 mx-1 border border-1 rounded p-3" style="height: 65vh">
-              <h5 class="form-label fs-5">Max Selected Ticket 10</h5>
-              <div v-if="ticketSelectedList.length >= 1" class="col-lg-2 text-center border-end">
-                <div class="d-flex justify-content-center mt-2">
-                  <h6 class="text-primary">Total selected {{ticketSelectedList.length}}</h6>
-                </div>
-                <div class="mt-3">
-                  <div v-for="(ticket, index) in ticketSelectedList" class="d-flex justify-content-center mt-1 fs-6">
-                    {{ ticket.bench_number }}
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg table-responsive text-nowrap" style="height: 60vh">
-                <div v-if="ticketList.length <= 0" class="text-center mt-5">
-                  <h2>Select Event Area Please</h2>
-                </div>
-                <div class="container">
-                  <div class="row row-cols-6">
-                    <div id="allTicket" v-for="(ticket, index) in ticketList" :key="index" class="col-lg-2 col-sm-3">
-                      <a role="button" @click.stop="ticketSelected({id: ticket.id, bench_number: ticket.bench_number})" 
-                      :id="`ticketId-${ticket.id}`" 
-                      class="ticket-button card py-4 text-white text-center fs-6 fw-bold mb-3" :class="ticket.status == 'ready' ? 'bg-cs-seat' : ticket.status == 'selected' ? 'bg-cs-orange' : 'bg-cs-muted disabled'">
-                        {{ ticket.bench_number }}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="d-flex justify-content-between mt-2">
-              <div class="mt-3">
-                <BaseButton @click-event="clearSelectedTicket" class="btn-xl btn-danger px-5">Clear</BaseButton>
-              </div>
-              <div class="mt-4">
-                <Paggination :config="ticketParams" @click-event="paginateTicket" />
-              </div>
-              <div class="mt-3">
-                <BaseButton @click-event="setToOrderPanel" :disabled="ticketSelectedList.length >= 1 ? false : true" class="btn-xl btn-primary px-5">Save</BaseButton>
-              </div>
-            </div>
-          </div>
+          <TicketPanel :event-id="orderPayload.event_id" @modal-action="setToOrderPanel" :first="orderPayload.order_detail.length" />
         </div>
 
         <!-- Payment Section -->
@@ -193,8 +134,11 @@
                 <ul class="list-group mt-3">
                   <li class="list-group-item d-flex">
                     <span class="col-lg-3">Ticket Selected</span>
-                    <div class="row px-2">
-                      <span style="padding: 8px !important; width: fit-content !important;" class="col-lg-2 m-1 card bg-cs-muted" v-for="(ticket, index) in ticketSelectedList">{{ ticket.bench_number }}</span>
+                    <div class="mx-3" v-for="(item, index) in ticketSelectedList" :key="index">
+                      <h4>{{ item.area_name }} : {{ item.ticket.length }}</h4>
+                      <div class="row px-2">
+                        <span style="padding: 8px !important; width: fit-content !important;" class="col-lg-2 m-1 card bg-cs-muted" v-for="(ticket, index2) in item.ticket" :key="index2">{{ ticket.bench_number }}</span>
+                      </div>
                     </div>
                   </li>
                   <li class="list-group-item d-flex">
@@ -273,7 +217,7 @@
   </BaseModal>
 </template>
 
-<style>
+<style scoped>
 .img-size {
   height: 11rem !important;
   width: auto !important;
@@ -291,6 +235,38 @@
   -moz-box-shadow: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+.box-seat2{
+  overflow-y: scroll !important;
+  max-height: 300px !important;
+}
+
+.box-seat2::-webkit-scrollbar {
+  width: 8px;
+}
+
+.box-seat2::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.box-seat2::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.box-seat2::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.seat-select{
+  padding: 5px 0;
+  background-color: #9DB2BF;
+  color: white;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 5px;
+  cursor: pointer;
 }
 </style>
 
@@ -314,18 +290,19 @@ import Sweetalert from "../../utils/Sweetalert";
 import BaseInput from "../input/BaseInput.vue";
 import AuthCheck from "../../utils/AuthCheck";
 import EventArea from "../../utils/EventArea";
+import ErrorLogs from '../../utils/ErrorLogs';
 import Paggination from "../Paggination.vue";
+import IziToast from '../../utils/IziToast';
 import Customer from "../../utils/Customer"
 import Currency from "../../utils/Currency"
+import Merchant from "../../utils/Merchant"
+import TicketPanel from './TicketPanel.vue'
 import BaseModal from "../BaseModal.vue";
 import Payment from "../../utils/Payment"
 import Invoke from "../../utils/Invoke";
 import Ticket from "../../utils/Ticket";
 import Order from "../../utils/Order"
 import Other from "../../utils/Other"
-import Merchant from "../../utils/Merchant"
-import ErrorLogs from '../../utils/ErrorLogs';
-import IziToast from '../../utils/IziToast';
 
 const titlePanel = ref("CUSTOMER FORM");
 
@@ -390,7 +367,6 @@ const orderPayload = reactive({
 });
 
 const customerPayload = reactive({
-  ticket_id: 0,
   name: "",
   gender: "l",
   email: "",
@@ -433,24 +409,9 @@ const v$ = useVuelidate(rules, customerPayload)
 
 const orderProccess = async () => {
   const validate = await v$.value.$validate()
-
-  orderPayload.order_detail = []
-  let list = ticketSelectedList.value
   
   if (validate) {
-
-    for await (const key of list) {
-      orderPayload.order_detail.push({
-        ticket_id: key.id,
-        name: customerPayload.name,
-        gender: customerPayload.gender,
-        email: customerPayload.email,
-        no_hp: customerPayload.no_hp,
-        is_customer: false,
-        description: customerPayload.description,
-      })
-    }
-
+    await duplicateForm(ticketSelectedList.value)
     Order.upsert(orderPayload)
     .then((res) => {
       let item = res.data
@@ -591,24 +552,7 @@ const paginateTicket = (params) => {
   // }
 }
 
-const ticketSelectedList = ref([])
-
-const ticketSelected = (params) => {
-  let button = document.getElementById(`ticketId-${params.id}`)
-  
-  if (button.classList.contains('bg-cs-seat') && ticketSelectedList.value.length < 10) {
-    ticketSelectedList.value.push(params)
-
-    button.classList.remove('bg-cs-seat')
-    button.classList.add('bg-cs-orange')
-
-  } else if (!button.classList.contains('bg-cs-seat') && ticketSelectedList.value.length >= 1){
-    ticketSelectedList.value = ticketSelectedList.value.filter((el) => el.id !== params.id)
-
-    button.classList.remove('bg-cs-orange')
-    button.classList.add('bg-cs-seat')
-  }
-}
+const ticketSelectedList = ref()
 
 const clearSelectedTicket = () => {
   ticketSelectedList.value = []
@@ -620,9 +564,26 @@ const clearSelectedTicket = () => {
   setToOrderPanel()
 }
 
-const setToOrderPanel = () => {
+const setToOrderPanel = (data) => {
   panelActive.value = 'order'
   titlePanel.value = 'CUSTOMER FORM'
+
+  if (data) {
+    ticketSelectedList.value = data
+  }
+}
+
+const duplicateForm = async (areaSelected) => {
+  const copiedCustomers = areaSelected.flatMap((area) =>
+    area.ticket.map((ticket) => {
+      const copiedCustomer = { ...customerPayload };
+      copiedCustomer.ticket_id = ticket.id;
+      return copiedCustomer;
+    })
+  );
+
+  orderPayload.order_detail.length = 0
+  orderPayload.order_detail.push(...copiedCustomers);
 }
 
 
@@ -837,6 +798,7 @@ const orderModal = ref(null)
 const showHideOrder = () => {
   orderModal.value.show() ? orderModal.value.show() : orderModal.value.hide()
 }
+
 const showOrderModal = (params) => {
   if (params && params.type == 'new') {
     getMerchantName()
