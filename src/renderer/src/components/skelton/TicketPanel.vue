@@ -255,7 +255,7 @@
             areaSelected[areaIndex].ticket.push(ticketData);
         }
     }
-    
+    // console.log(areaSelected);
   }
 
   const checkTicketSelected = (ticketId, ticketStatus, eventAreaId) => {
@@ -269,15 +269,14 @@
       return 'seat-taked disabled'
     }
 
-    const area = areaSelected.find((item) => item.id === eventAreaId);
+    const totalTickets = areaSelected.reduce((acc, item) => acc + item.ticket.length, 0);
 
-    if (area) {
-      const ticketLength = area.ticket.length;
-      if (ticketLength >= 10) {
-        return isSelected ? 'seat-selected' : 'disabled seat-ready'
-      } else {
-        return isSelected ? 'seat-selected' : 'seat-ready';
-      }
+    // const area = areaSelected.find((item) => item.id === eventAreaId);
+
+    if (totalTickets >= 10) {
+      return isSelected ? 'seat-selected' : 'disabled seat-ready'
+    } else {
+      return isSelected ? 'seat-selected' : 'seat-ready';
     }
     
   }
